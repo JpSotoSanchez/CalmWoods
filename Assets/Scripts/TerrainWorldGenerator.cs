@@ -119,6 +119,10 @@ namespace CalmWoods
         public float grassClumpScale = 0.3f;                 // Higher = smaller clumps
         [Tooltip("Grass thinner than this ground weight is skipped, so there is no grass on dirt, path edges or rock.")]
         [Range(0f, 0.75f)] public float grassMinGroundWeight = 0.35f;
+        [Tooltip("Grass disappears where the rock layer weight is above this (0 = no rock at all, 0.12 = almost none). Keeps grass off mountains.")]
+        [Range(0f, 0.5f)] public float grassMaxRock = 0.12f;
+        [Tooltip("No grass on slopes steeper than this (degrees).")]
+        [Range(10f, 60f)] public float grassMaxSlopeDegrees = 30f;
         [Range(0f, 1f)] public float grassUnderDarkFactor = 0.8f;   // Relative density on the dark (forest) grass layer
         [Tooltip("Grass farther than this from the camera is not drawn. This is the main Quest performance knob.")]
         public float grassDrawDistance = 25f;
@@ -841,8 +845,14 @@ namespace CalmWoods
 
             GroundWeights(x, z, out float rock, out float dirt, out float dark, out float light);
 
-            // Never on bare ground (shore, dirt patches): above ~50% dirt there is no grass at all.
-            float bare = 1f - Mathf.SmoothStep(0.15f, 0.5f, dirt);
+            // Never on mountains: any visible rock layer, or a steep slope, means no grass.
+            // (Before, a spot that was 30% rock still counted as "grass" because the other 70% was.)
+            if (rock > grassMaxRock) return 0f;
+            if (SlopeDegrees(x, z) > grassMaxSlopeDegrees) return 0f;
+
+            // Never on bare ground (shore, path, big dirt patches). Up to 30% dirt is allowed because
+            // forest floor is a mix of dirt and dark grass; it fades to nothing at 55% dirt.
+            float bare = 1f - Mathf.SmoothStep(0.3f, 0.55f, dirt);
             if (bare <= 0f) return 0f;
 
             // Full density from (min + 0.25) up. Under a forest the ground is already partly dirt,
@@ -923,6 +933,11 @@ namespace CalmWoods
                     {
                         float x = -half + (xi + (float)rng.NextDouble()) * cell;
                         float z = -half + (zi + (float)rng.NextDouble()) * cell;
+
+                        // The density above was measured at the cell center; check the exact spot too, so
+                        // tufts near the edge of a grass area do not land on rock, dirt or the path.
+                        if (GrassDensity(x, z) <= 0.01f) continue;
+
                         var world = new Vector3(x, 0f, z) + rootPos;
                         float y = terrain.SampleHeight(world) + terrain.transform.position.y - 0.02f;
 

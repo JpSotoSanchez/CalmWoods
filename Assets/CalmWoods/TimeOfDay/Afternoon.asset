@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 057fc5ec7e94d7d074ee372a368b3da8, type: 3}
+  m_Name: Afternoon
+  m_EditorClassIdentifier: 
+  timeOfDay: 1
+  isAvailable: 1
+  skybox: {fileID: 2100000, guid: a9536995e478c43c360bce8ad531e74d, type: 2}
+  sunColor: {r: 1, g: 0.94, b: 0.84, a: 1}
+  sunIntensity: 1.1
+  sunRotation: {x: 40, y: -40, z: 0}
+  ambientSky: {r: 0.55, g: 0.65, b: 0.8, a: 1}
+  ambientEquator: {r: 0.45, g: 0.5, b: 0.5, a: 1}
+  ambientGround: {r: 0.2, g: 0.18, b: 0.15, a: 1}
+  fogEnabled: 1
+  fogColor: {r: 0.38, g: 0.74, b: 0.97, a: 1}
+  fogStart: 15
+  fogEnd: 90

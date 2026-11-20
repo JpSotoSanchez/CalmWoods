@@ -49,8 +49,8 @@ namespace CalmWoods
         public bool generateLake = true;
         public float lakeRadius = 14f;
         public Vector2 lakeDistanceRange = new Vector2(16f, 28f);   // Distance from the player to the lake center
-        public float lakeDepth = 2.5f;
-        public float waterLevel = -0.4f;
+        public float lakeDepth = 1.0f;               // Shallow enough to wade without submerging
+        public float waterLevel = -0.3f;
         public bool lakeHasDock = true;
         public float dockLength = 5f;
         public float dockWidth = 1.4f;
@@ -74,6 +74,13 @@ namespace CalmWoods
 
         [Header("Palette (one color per Palette enum entry)")]
         public Color[] paletteColors = DefaultPalette();
+
+        [Header("Play area")]
+        public bool buildBoundary = true;
+        [Tooltip("Extra margin in meters between the mountain ring and the invisible walls.")]
+        public float boundaryMargin = 3f;
+        [Tooltip("Assign the XR Origin / player rig so the generator can place it at the clearing.")]
+        public Transform playerRig;
 
         [Header("Asset pools (optional - leave empty to use built-in low-poly placeholders)")]
         public GameObject[] treePrefabs;
@@ -162,6 +169,8 @@ namespace CalmWoods
             BuildTerrainMesh();
             BuildWaterMesh();
             PlaceProps();
+            BuildBoundary();
+            PlacePlayer();
         }
 
         void ClearWorld()
@@ -636,7 +645,7 @@ namespace CalmWoods
                     bool rocky = ground[i, j] == Palette.Rock || ground[i, j] == Palette.Snow;
                     if (rng.NextDouble() < rockChance * (rocky ? 4f : 1f))
                     {
-                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock");
+                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock", true);
                         rocks++;
                     }
                 }
@@ -647,11 +656,12 @@ namespace CalmWoods
             Debug.Log($"WorldGenerator: seed {seed}, {N}x{N} cells ({N * cellSize} m), {trees} trees, {rocks} rocks, {N * N * 2} terrain triangles.");
         }
 
-        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange, string propName)
+        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange, string propName, bool sinkIntoGround = false)
         {
             float x = cellCenter.x + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
             float z = cellCenter.y + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
-            float y = SampleHeight(x, z) - 0.05f;   // Sink slightly so slopes never expose the base
+            float sinkAmount = sinkIntoGround ? 0.25f : 0.05f;  // Rocks sink deeper so they look embedded
+            float y = SampleHeight(x, z) - sinkAmount;
             Quaternion rot = Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f);
             float s = Mathf.Lerp(scaleRange.x, scaleRange.y, (float)rng.NextDouble());
 
@@ -681,35 +691,80 @@ namespace CalmWoods
                 treeMeshes = new[] { BuildPineMesh(), BuildBroadleafMesh() };
 
             if (rockPrefabs == null || rockPrefabs.Length == 0 || rockPrefabs[0] == null)
-                rockMeshes = new[] { BuildRockMesh(5, 0.7f, 0.6f), BuildRockMesh(6, 0.9f, 0.75f) };
+                rockMeshes = new[] { BuildRockMesh(8, 0.7f, 0.6f), BuildRockMesh(10, 0.9f, 0.75f) };
         }
 
         static Mesh BuildPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
-            mb.AddBox(new Vector3(0f, 0.6f, 0f), new Vector3(0.3f, 1.2f, 0.3f), Palette.Trunk);
-            mb.AddCone(new Vector3(0f, 1.0f, 0f), 1.5f, 2.8f, 6, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 2.6f, 0f), 1.1f, 2.4f, 6, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 4.0f, 0f), 0.7f, 2.0f, 6, Palette.Leaves);
+            // Trunk: octagonal cylinder instead of a box, so it looks rounded
+            mb.AddCone(new Vector3(0f, 0f, 0f), 0.15f, 1.4f, 8, Palette.Trunk);
+            // Four layers of foliage with more sides for a smoother silhouette
+            mb.AddCone(new Vector3(0f, 0.8f, 0f), 1.6f, 2.6f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 2.2f, 0f), 1.25f, 2.2f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 3.5f, 0f), 0.9f, 1.8f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 4.6f, 0f), 0.5f, 1.3f, 10, Palette.Leaves);
             return mb.ToMesh("PinePlaceholder");
         }
 
         static Mesh BuildBroadleafMesh()
         {
             var mb = new LowPolyMeshBuilder();
-            mb.AddBox(new Vector3(0f, 1.0f, 0f), new Vector3(0.35f, 2.0f, 0.35f), Palette.Trunk);
-            // Canopy: two cones joined at their bases (a low-poly "gem" shape)
-            mb.AddCone(new Vector3(0f, 2.8f, 0f), 1.8f, 1.8f, 5, Palette.Leaves, false);
-            mb.AddCone(new Vector3(0f, 2.8f, 0f), 1.8f, -1.4f, 5, Palette.Leaves, false);
+            // Trunk: octagonal cylinder
+            mb.AddCone(new Vector3(0f, 0f, 0f), 0.18f, 2.2f, 8, Palette.Trunk);
+            // Canopy: two cones joined at their bases (gem shape) with more sides
+            mb.AddCone(new Vector3(0f, 3.0f, 0f), 2.0f, 2.0f, 8, Palette.Leaves, false);
+            mb.AddCone(new Vector3(0f, 3.0f, 0f), 2.0f, -1.5f, 8, Palette.Leaves, false);
+            // Extra smaller canopy blob on top for a fuller look
+            mb.AddCone(new Vector3(0f, 4.2f, 0f), 1.2f, 1.2f, 8, Palette.Leaves, false);
+            mb.AddCone(new Vector3(0f, 4.2f, 0f), 1.2f, -0.9f, 8, Palette.Leaves, false);
             return mb.ToMesh("BroadleafPlaceholder");
         }
 
         static Mesh BuildRockMesh(int sides, float radius, float height)
         {
+            // Only the top half: a dome sitting on the ground, no pointed bottom (no UFO look).
             var mb = new LowPolyMeshBuilder();
-            mb.AddCone(new Vector3(0f, height * 0.4f, 0f), radius, height * 0.6f, sides, Palette.Rock, false);
-            mb.AddCone(new Vector3(0f, height * 0.4f, 0f), radius, -height * 0.4f, sides, Palette.Rock, false);
+            mb.AddCone(new Vector3(0f, 0f, 0f), radius, height, sides, Palette.Rock, false);
             return mb.ToMesh("RockPlaceholder");
+        }
+
+        // ================= Boundary =================
+
+        void BuildBoundary()
+        {
+            if (!buildBoundary) return;
+
+            float wallHeight = mountainHeight + 10f;
+            float wallThickness = 2f;
+            float extent = half - boundaryMargin;
+
+            var parent = new GameObject("Boundary").transform;
+            parent.SetParent(worldRoot, false);
+
+            // Four invisible walls around the playable area.
+            AddWall(parent, new Vector3(0f, wallHeight * 0.5f, extent), new Vector3(extent * 2f, wallHeight, wallThickness));   // +Z
+            AddWall(parent, new Vector3(0f, wallHeight * 0.5f, -extent), new Vector3(extent * 2f, wallHeight, wallThickness));  // -Z
+            AddWall(parent, new Vector3(extent, wallHeight * 0.5f, 0f), new Vector3(wallThickness, wallHeight, extent * 2f));   // +X
+            AddWall(parent, new Vector3(-extent, wallHeight * 0.5f, 0f), new Vector3(wallThickness, wallHeight, extent * 2f));  // -X
+        }
+
+        static void AddWall(Transform parent, Vector3 center, Vector3 size)
+        {
+            var go = new GameObject("Wall");
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = center;
+            var col = go.AddComponent<BoxCollider>();
+            col.size = size;
+            // No MeshRenderer: the wall is invisible.
+        }
+
+        void PlacePlayer()
+        {
+            if (playerRig == null) return;
+
+            float y = SampleHeight(0f, 0f) + 0.1f;
+            playerRig.position = transform.position + new Vector3(0f, y, 0f);
         }
     }
 }

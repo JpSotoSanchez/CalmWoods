@@ -1,0 +1,36 @@
+{
+    "version": 1,
+    "name": "CalmWoodsInput",
+    "maps": [
+        {
+            "name": "Mode",
+            "id": "184b05e3-2733-4f85-af41-98ce5b4eeeff",
+            "actions": [
+                {
+                    "name": "OpenUI",
+                    "type": "Button",
+                    "id": "ca26e164-46d3-477f-a73e-cc5cdcc70d1a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "47044196-80c3-4e02-8ca8-cb2c8d2c26b9",
+                    "path": "<XRController>{RightHand}/{TriggerButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenUI",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

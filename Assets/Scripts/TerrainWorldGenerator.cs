@@ -111,7 +111,7 @@ namespace CalmWoods
         [Tooltip("Grass blades per square meter on fully grassy ground, before the density scale below.")]
         [Range(0f, 20f)] public float grassPerM2 = 6f;
         [Tooltip("Bigger tufts cover more ground per instance, so a lush look costs fewer instances. Try 1.0 - 1.8.")]
-        public Vector2 grassScaleRange = new Vector2(1f, 1.6f);
+        public Vector2 grassScaleRange = new Vector2(0.35f, 0.6f);
         [Tooltip("Detail map resolution. Multiple of 16. 512 over 160 m = one cell every 0.3 m (needed for dense grass: max 16 per cell).")]
         public int detailResolution = 512;
         [Tooltip("0 = even lawn, 1 = clumps with bare spots (looks much more natural).")]
@@ -168,6 +168,26 @@ namespace CalmWoods
         public int maxBushes = 300;                          // Hard performance cap
         public float bushPathClearance = 0.6f;               // Bushes may grow closer to the path than trees
 
+        [Header("Collisions (trees block the player)")]
+        [Tooltip("Adds an invisible capsule to every tree trunk. Only blocks a player that uses a CharacterController or a Rigidbody.")]
+        public bool treeColliders = true;
+        [Tooltip("Trunk radius in meters at scale 1 (measure your tree: the trunk is about 0.6 - 1 m wide).")]
+        public float trunkRadius = 0.5f;
+        [Tooltip("Collider height in meters at scale 1.")]
+        public float trunkHeight = 4f;
+
+        [Header("Play area (the player cannot leave the mountains)")]
+        public bool limitPlayerArea = true;
+        [Tooltip("Invisible walls this far inside the edge of the world.")]
+        public float boundaryMargin = 3f;
+        [Tooltip("Your XR Origin / player rig. It is placed in the clearing and kept inside the walls. Leave empty to only build the walls.")]
+        public Transform playerRig;
+        public bool placePlayerAtClearing = true;
+        [Tooltip("The player cannot walk into the water (the dock is still walkable). Needs Player Rig.")]
+        public bool blockWater = true;
+        [Tooltip("Meters above the water level where the player is stopped, so they do not wade in.")]
+        public float waterBlockMargin = 0.15f;
+
         [Header("Quest performance")]
         public bool terrainCastsShadows = false;
         public float heightmapPixelError = 8f;               // Higher = fewer terrain triangles
@@ -180,6 +200,8 @@ namespace CalmWoods
         Vector2 lakeCenter;
         Vector2 pathTarget;                                  // Where the path ends (the dock, or a random point)
         bool hasPathTarget;
+        Vector3 dockStartLocal, dockDirLocal;                // Dock position and direction (world root space)
+        bool hasDockPlaced;
         readonly List<Vector2> pathPoints = new List<Vector2>();
         float forestThreshold = float.MaxValue;
         float emptyThreshold = float.MaxValue;
@@ -225,6 +247,7 @@ namespace CalmWoods
             pathGrid = null;
             grassInstances = 0;
             hasPathTarget = false;
+            hasDockPlaced = false;
             rejClearing = rejLake = rejHeight = rejSlope = rejDock = rejPath = 0;
             worldRoot = new GameObject("GeneratedWorld").transform;
             worldRoot.SetParent(transform, false);
@@ -237,6 +260,61 @@ namespace CalmWoods
             BuildWater();
             PlaceProps();
             if (grassMode == GrassMode.InstancedDraw) BuildGrassInstanced();
+            BuildBoundary();
+            PlacePlayer();
+        }
+
+        // Four invisible walls just inside the world edge, plus a limiter for any kind of locomotion.
+        void BuildBoundary()
+        {
+            if (!limitPlayerArea) return;
+
+            float edge = half - boundaryMargin;
+            float wallHeight = terrainHeight + 20f;
+            float thickness = 2f;
+            var walls = new GameObject("Boundary").transform;
+            walls.SetParent(worldRoot, false);
+
+            // Center, size (x, z) of each wall, in world-root local space.
+            AddWall(walls, new Vector3(0f, wallHeight * 0.5f, edge + thickness * 0.5f), new Vector3(worldSize, wallHeight, thickness));
+            AddWall(walls, new Vector3(0f, wallHeight * 0.5f, -edge - thickness * 0.5f), new Vector3(worldSize, wallHeight, thickness));
+            AddWall(walls, new Vector3(edge + thickness * 0.5f, wallHeight * 0.5f, 0f), new Vector3(thickness, wallHeight, worldSize));
+            AddWall(walls, new Vector3(-edge - thickness * 0.5f, wallHeight * 0.5f, 0f), new Vector3(thickness, wallHeight, worldSize));
+
+            if (playerRig != null)
+            {
+                var limiter = playerRig.GetComponent<PlayerAreaLimiter>();
+                if (limiter == null) limiter = playerRig.gameObject.AddComponent<PlayerAreaLimiter>();
+                limiter.Configure(worldRoot.position, edge - 0.5f);
+
+                // The player cannot walk into the lake, only onto the dock.
+                if (generateLake && blockWater)
+                {
+                    limiter.ConfigureWater(terrain, worldRoot.position.y + waterLevel + waterBlockMargin,
+                        hasDockPlaced, worldRoot.TransformPoint(dockStartLocal), worldRoot.TransformDirection(dockDirLocal),
+                        dockLength, dockWidth);
+                }
+                else
+                {
+                    limiter.ConfigureWater(null, 0f, false, Vector3.zero, Vector3.forward, 0f, 0f);
+                }
+            }
+        }
+
+        static void AddWall(Transform parent, Vector3 localCenter, Vector3 size)
+        {
+            var wall = new GameObject("Wall");
+            wall.transform.SetParent(parent, false);
+            wall.transform.localPosition = localCenter;
+            wall.AddComponent<BoxCollider>().size = size;
+        }
+
+        void PlacePlayer()
+        {
+            if (playerRig == null || !placePlayerAtClearing || terrain == null) return;
+            var world = worldRoot.position;
+            float y = terrain.SampleHeight(world) + terrain.transform.position.y;
+            playerRig.position = new Vector3(world.x, y + 0.05f, world.z);
         }
 
         void ClearWorld()
@@ -541,6 +619,10 @@ namespace CalmWoods
             Vector3 dir = new Vector3(-toPlayer.x, 0f, -toPlayer.y);   // From the shore toward the lake center
             Vector3 start = new Vector3(shore.x, waterLevel + dockHeightAboveWater, shore.y) - dir * 1.0f;
 
+            dockStartLocal = start;
+            dockDirLocal = dir;
+            hasDockPlaced = true;
+
             // The path ends at the land side of the dock.
             pathTarget = new Vector2(start.x, start.z);
             hasPathTarget = true;
@@ -777,7 +859,16 @@ namespace CalmWoods
             go.transform.localPosition = new Vector3(-half, -baseOffset, -half);
 
             terrain = go.GetComponent<Terrain>();
-            if (terrainMaterial != null) terrain.materialTemplate = terrainMaterial;
+            if (terrainMaterial != null)
+            {
+                terrain.materialTemplate = terrainMaterial;
+            }
+            else
+            {
+                // Without a material asset, the shader may be left out of the Quest build and the terrain
+                // is invisible there. Assign a material using "Universal Render Pipeline/Terrain/Lit".
+                Debug.LogWarning("TerrainWorldGenerator: 'Terrain Material' is empty. It works in the editor but can be invisible on Quest. Assign a URP Terrain Lit material.");
+            }
             terrain.heightmapPixelError = heightmapPixelError;
             terrain.basemapDistance = basemapDistance;
             terrain.drawInstanced = true;
@@ -1168,7 +1259,7 @@ namespace CalmWoods
                 if (DistanceToPath(x, z) < pathWidth * 0.5f + 0.5f) { rejPath++; return false; }
             }
 
-            return SpawnPrefab(parent, pool, scaleRange, x, z);
+            return SpawnPrefab(parent, pool, scaleRange, x, z, needsTreeGround);
         }
 
         // Bushes: small prefabs on open grass. Never in the clearing, on the path, near the lake,
@@ -1192,7 +1283,7 @@ namespace CalmWoods
         }
 
         // Picks a prefab from the pool and places it on the real terrain surface.
-        bool SpawnPrefab(Transform parent, GameObject[] pool, Vector2 scaleRange, float x, float z)
+        bool SpawnPrefab(Transform parent, GameObject[] pool, Vector2 scaleRange, float x, float z, bool addTrunkCollider = false)
         {
             GameObject prefab = null;
             for (int tries = 0; tries < 5 && prefab == null; tries++) prefab = pool[rng.Next(pool.Length)];
@@ -1205,7 +1296,20 @@ namespace CalmWoods
             GameObject go = Instantiate(prefab, parent);
             go.transform.position = new Vector3(world.x, y, world.z);
             go.transform.rotation = Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f);
-            go.transform.localScale = prefab.transform.localScale * Mathf.Lerp(scaleRange.x, scaleRange.y, (float)rng.NextDouble());
+            float scale = Mathf.Lerp(scaleRange.x, scaleRange.y, (float)rng.NextDouble());
+            go.transform.localScale = prefab.transform.localScale * scale;
+
+            // The collider is a separate object, so it does not depend on the scale of the imported mesh.
+            if (addTrunkCollider && treeColliders)
+            {
+                var trunk = new GameObject("TrunkCollider");
+                trunk.transform.SetParent(parent, false);
+                trunk.transform.position = new Vector3(world.x, y, world.z);
+                var capsule = trunk.AddComponent<CapsuleCollider>();
+                capsule.radius = trunkRadius * scale;
+                capsule.height = trunkHeight * scale;
+                capsule.center = new Vector3(0f, capsule.height * 0.5f, 0f);
+            }
             return true;
         }
     }

@@ -82926,6 +82926,8 @@ GameObject:
   - component: {fileID: 1916464641}
   - component: {fileID: 1916464640}
   - component: {fileID: 1916464642}
+  - component: {fileID: 1916464644}
+  - component: {fileID: 1916464643}
   m_Layer: 0
   m_Name: BreathUI
   m_TagString: Untagged
@@ -82983,6 +82985,59 @@ MonoBehaviour:
   distance: 1.2
   heightOffset: -0.1
   fadeDuration: 0.25
+--- !u!114 &1916464643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916464639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b89d7ae5bed75346b8df34e5d953e75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ControllerBreathingTracker
+  modeSwitcher: {fileID: 1916464640}
+  controller: {fileID: 2093222413}
+  head: {fileID: 2093222412}
+  debugLabel: {fileID: 0}
+  warmupSeconds: 5
+  jitterSmoothing: 0.3
+  baselineSeconds: 10
+  axisSeconds: 15
+  movementResetMeters: 0.05
+  minSignalMeters: 0.001
+  thresholdFraction: 0.35
+  minBreathInterval: 2
+  intervalsToAverage: 4
+  staleSeconds: 25
+  logDebug: 0
+--- !u!114 &1916464644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916464639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e44942311f1c0048933ccc61f026f9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MicrophoneBreathingTracker
+  modeSwitcher: {fileID: 1916464640}
+  debugLabel: {fileID: 0}
+  sampleRate: 16000
+  permissionTimeoutSeconds: 30
+  envelopeSmoothing: 0.25
+  envelopeRate: 20
+  analysisWindowSeconds: 20
+  thresholdFraction: 0.5
+  minSignalRange: 0.002
+  minBurstInterval: 1.5
+  burstsPerBreath: 1
+  intervalsToAverage: 4
+  staleSeconds: 20
+  logDebug: 0
 --- !u!1 &1916594567
 GameObject:
   m_ObjectHideFlags: 0
@@ -88718,6 +88773,11 @@ PrefabInstance:
 --- !u!4 &2093222412 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7917674758326848202, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 2093222411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2093222413 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7917674758919744168, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
   m_PrefabInstance: {fileID: 2093222411}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2096724575

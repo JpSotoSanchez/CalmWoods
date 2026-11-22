@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Shows and hides the world-space UI canvas in response to mode changes.
+/// Shows and hides a world-space UI canvas when the app enters/leaves a given mode.
 /// Places the canvas in front of the user's head when it opens and fades it in/out.
 ///
 /// IMPORTANT: put this script on an object that stays ACTIVE (e.g. an empty "UIRoot"),
@@ -13,6 +13,9 @@ public class VRCanvasController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private TriggerModeSwitcher modeSwitcher;
+
+    [Tooltip("The mode in which this canvas is visible (Feedback for the breathing UI, Options for the menu).")]
+    [SerializeField] private AppMode showInMode = AppMode.Feedback;
 
     [Tooltip("The World Space canvas GameObject (child of this object).")]
     [SerializeField] private GameObject canvasRoot;
@@ -64,7 +67,7 @@ public class VRCanvasController : MonoBehaviour
 
     private void HandleModeChanged(AppMode mode)
     {
-        if (mode == AppMode.Feedback)
+        if (mode == showInMode)
         {
             Open();
         }
@@ -83,6 +86,9 @@ public class VRCanvasController : MonoBehaviour
 
     public void Close()
     {
+        // Already hidden and not fading: nothing to do (happens when the OTHER canvas changes mode).
+        if (!canvasRoot.activeSelf && fadeRoutine == null) return;
+
         // Block clicks immediately so the user can't press buttons while it fades out.
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;

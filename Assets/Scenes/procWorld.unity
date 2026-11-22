@@ -74579,6 +74579,8 @@ GameObject:
   - component: {fileID: 1916464644}
   - component: {fileID: 1916464643}
   - component: {fileID: 1916464645}
+  - component: {fileID: 1916464646}
+  - component: {fileID: 1916464647}
   m_Layer: 0
   m_Name: BreathUI
   m_TagString: Untagged
@@ -74586,6 +74588,54 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1916464646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916464639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 710d1b377251d0e478a2be1f8481db48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CalmWoods.Audio.AmbientSoundscape
+  dayClip: {fileID: 8300000, guid: 4f9708d99a057b8439d510f8806cc63b, type: 3}
+  nightClip: {fileID: 8300000, guid: f7c0a3b121eb64041ba403af480cbb8c, type: 3}
+  waterClip: {fileID: 8300000, guid: 3c2f99afe0a9cda4dad096f2aebba302, type: 3}
+  ambientSlider: {fileID: 1832832546}
+  forestVolume: 0.8
+  waterVolume: 0.5
+  dayNightFadeSeconds: 3
+  water: {fileID: 0}
+  waterObjectName: Water
+  fullVolumeDistance: 0
+  silentDistance: 5
+  waterSmoothing: 0.75
+  forestDuckNearWater: 0
+  listener: {fileID: 2093222412}
+--- !u!114 &1916464647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916464639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51a16be043f7ec4e8026d84453b5319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CalmWoods.Audio.MusicPlaylist
+  tracks:
+  - {fileID: 8300000, guid: 96e0fdb76d6e9a34a831bde71746337d, type: 3}
+  - {fileID: 8300000, guid: 5f78f7565d1388448887f765eff77b73, type: 3}
+  - {fileID: 8300000, guid: 5e76bd333ef62264baf03301e2383d77, type: 3}
+  - {fileID: 8300000, guid: caee1b85fc10ca54f86faf14bafced97, type: 3}
+  - {fileID: 8300000, guid: 2887af6f117f501479f7bdc547ed48d0, type: 3}
+  musicSlider: {fileID: 251257389}
+  musicVolume: 0.6
+  playOnStart: 1
+  crossfadeSeconds: 4
 --- !u!114 &1916464640
 MonoBehaviour:
   m_ObjectHideFlags: 0

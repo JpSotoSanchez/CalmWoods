@@ -4271,6 +4271,32 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 268949759}
   m_Mesh: {fileID: 2147105333}
+--- !u!114 &269681926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880686019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 710d1b377251d0e478a2be1f8481db48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CalmWoods.Audio.AmbientSoundscape
+  dayClip: {fileID: 8300000, guid: 4f9708d99a057b8439d510f8806cc63b, type: 3}
+  nightClip: {fileID: 8300000, guid: f7c0a3b121eb64041ba403af480cbb8c, type: 3}
+  waterClip: {fileID: 8300000, guid: 3c2f99afe0a9cda4dad096f2aebba302, type: 3}
+  ambientSlider: {fileID: 334213866}
+  forestVolume: 0.8
+  waterVolume: 0.5
+  dayNightFadeSeconds: 3
+  water: {fileID: 548358359}
+  waterObjectName: Water
+  fullVolumeDistance: 0
+  silentDistance: 5
+  waterSmoothing: 0.75
+  forestDuckNearWater: 0
+  listener: {fileID: 1929606622}
 --- !u!1 &277900692
 GameObject:
   m_ObjectHideFlags: 0
@@ -9890,6 +9916,21 @@ Transform:
   - {fileID: 1009989574}
   m_Father: {fileID: 115069313}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &647831513
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880686019}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &650796727
 GameObject:
   m_ObjectHideFlags: 0
@@ -13289,6 +13330,24 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 878538600}
   m_Mesh: {fileID: 2147105333}
+--- !u!1 &880686019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 647831513}
+  - component: {fileID: 269681926}
+  - component: {fileID: 1297134155}
+  m_Layer: 0
+  m_Name: Audio
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &885501879
 GameObject:
   m_ObjectHideFlags: 0
@@ -17846,8 +17905,10 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -17865,7 +17926,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 1523753909}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -20361,6 +20422,28 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295685460}
   m_Mesh: {fileID: 2147105333}
+--- !u!114 &1297134155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880686019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51a16be043f7ec4e8026d84453b5319, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CalmWoods.Audio.MusicPlaylist
+  tracks:
+  - {fileID: 8300000, guid: 96e0fdb76d6e9a34a831bde71746337d, type: 3}
+  - {fileID: 8300000, guid: 5f78f7565d1388448887f765eff77b73, type: 3}
+  - {fileID: 8300000, guid: 5e76bd333ef62264baf03301e2383d77, type: 3}
+  - {fileID: 8300000, guid: caee1b85fc10ca54f86faf14bafced97, type: 3}
+  - {fileID: 8300000, guid: 2887af6f117f501479f7bdc547ed48d0, type: 3}
+  musicSlider: {fileID: 1926530156}
+  musicVolume: 0.6
+  playOnStart: 1
+  crossfadeSeconds: 4
 --- !u!1 &1310710978
 GameObject:
   m_ObjectHideFlags: 0
@@ -29343,6 +29426,11 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 7277802327414017196, guid: e4f332aea9a46b34bab01d9d6d17f588, type: 3}
   m_PrefabInstance: {fileID: 1929606620}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1929606622 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7277802327414017193, guid: e4f332aea9a46b34bab01d9d6d17f588, type: 3}
+  m_PrefabInstance: {fileID: 1929606620}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1938866568
 GameObject:
   m_ObjectHideFlags: 0
@@ -36144,3 +36232,4 @@ SceneRoots:
   - {fileID: 1045196216}
   - {fileID: 119403021}
   - {fileID: 115069313}
+  - {fileID: 647831513}

@@ -7,7 +7,7 @@
             "id": "184b05e3-2733-4f85-af41-98ce5b4eeeff",
             "actions": [
                 {
-                    "name": "OpenUI",
+                    "name": "ToggleBreathing",
                     "type": "Button",
                     "id": "ca26e164-46d3-477f-a73e-cc5cdcc70d1a",
                     "expectedControlType": "",
@@ -17,9 +17,9 @@
                     "priority": 0
                 },
                 {
-                    "name": "ToggleSettings",
+                    "name": "ToggleOptions",
                     "type": "Button",
-                    "id": "8c3cb7bb-1bae-46bd-ad12-21667d7aa010",
+                    "id": "9a1f6c52-3b7e-4d0a-8c41-5e2d7f90ab13",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -31,22 +31,22 @@
                 {
                     "name": "",
                     "id": "47044196-80c3-4e02-8ca8-cb2c8d2c26b9",
-                    "path": "<XRController>{RightHand}/{TriggerButton}",
+                    "path": "<XRController>{RightHand}/{SecondaryButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "OpenUI",
+                    "action": "ToggleBreathing",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "1ce49e60-e5c2-46e1-9dfe-604d631bb696",
-                    "path": "<XRController>{LeftHand}/{MenuButton}",
+                    "id": "c3d8e4a1-6f92-4b57-a0e3-1d5b8c7f2e64",
+                    "path": "<XRController>{LeftHand}/{SecondaryButton}",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ToggleSettings",
+                    "action": "ToggleOptions",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

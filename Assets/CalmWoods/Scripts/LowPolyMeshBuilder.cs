@@ -5,9 +5,27 @@ namespace CalmWoods
 {
     // Every color used by the generated world. Each entry is one texel of a tiny palette texture,
     // so terrain, trees, rocks, water and dock can all share ONE material (very cheap on Quest).
+    //
+    // The first 11 entries keep backward compatibility. Entries 11-15 add visual variety
+    // (shaded foliage, sunlit grass, mossy rock, wildflowers, bright canopy highlights).
     public enum Palette
     {
-        Grass, ForestFloor, Rock, Snow, Sand, LakeBed, Clearing, Trunk, Leaves, Wood, Water
+        Grass,          // 0
+        ForestFloor,    // 1
+        Rock,           // 2
+        Snow,           // 3
+        Sand,           // 4
+        LakeBed,        // 5
+        Clearing,       // 6
+        Trunk,          // 7
+        Leaves,         // 8
+        Wood,           // 9
+        Water,          // 10
+        DarkLeaves,     // 11  — shaded inner foliage / bushes
+        LightGrass,     // 12  — sunlit meadow highlights
+        DarkRock,       // 13  — mossy / shadowed stone
+        Wildflower,     // 14  — small pops of color on the ground
+        BrightLeaves    // 15  — lighter canopy highlights
     }
 
     public static class PaletteInfo
@@ -91,6 +109,37 @@ namespace CalmWoods
                 if (cap)
                 {
                     AddTriangle(p0, p1, baseCenter, color, height > 0f ? Vector3.down : Vector3.up);
+                }
+            }
+        }
+
+        // Hemisphere dome (half sphere). Used for bush canopies and rounded rock tops.
+        // 'rings' latitude bands x 'segments' longitude slices. Cheap enough for Quest
+        // at 2x6 (24 tris) or 3x8 (48 tris).
+        public void AddHemisphere(Vector3 center, float radius, int rings, int segments, Palette color)
+        {
+            for (int ring = 0; ring < rings; ring++)
+            {
+                float phi0 = (ring / (float)rings) * Mathf.PI * 0.5f;
+                float phi1 = ((ring + 1) / (float)rings) * Mathf.PI * 0.5f;
+                float y0 = Mathf.Sin(phi0) * radius;
+                float y1 = Mathf.Sin(phi1) * radius;
+                float r0 = Mathf.Cos(phi0) * radius;
+                float r1 = Mathf.Cos(phi1) * radius;
+
+                for (int seg = 0; seg < segments; seg++)
+                {
+                    float t0 = (seg / (float)segments) * Mathf.PI * 2f;
+                    float t1 = ((seg + 1) / (float)segments) * Mathf.PI * 2f;
+
+                    Vector3 a = center + new Vector3(Mathf.Cos(t0) * r0, y0, Mathf.Sin(t0) * r0);
+                    Vector3 b = center + new Vector3(Mathf.Cos(t1) * r0, y0, Mathf.Sin(t1) * r0);
+                    Vector3 c = center + new Vector3(Mathf.Cos(t1) * r1, y1, Mathf.Sin(t1) * r1);
+                    Vector3 d = center + new Vector3(Mathf.Cos(t0) * r1, y1, Mathf.Sin(t0) * r1);
+
+                    Vector3 outward = ((a + b + c + d) * 0.25f - center).normalized;
+                    AddTriangle(a, b, c, color, outward);
+                    AddTriangle(a, c, d, color, outward);
                 }
             }
         }

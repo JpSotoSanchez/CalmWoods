@@ -116,14 +116,19 @@ namespace CalmWoods
         // Hemisphere dome (half sphere). Used for bush canopies and rounded rock tops.
         // 'rings' latitude bands x 'segments' longitude slices. Cheap enough for Quest
         // at 2x6 (24 tris) or 3x8 (48 tris).
-        public void AddHemisphere(Vector3 center, float radius, int rings, int segments, Palette color)
+        // When flipDown is true the hemisphere faces downward (bottom half of a sphere),
+        // so pairing one normal + one flipped at the same center gives a full sphere with
+        // no seam at the equator — both halves share the same equator ring of vertices.
+        public void AddHemisphere(Vector3 center, float radius, int rings, int segments, Palette color, bool flipDown = false)
         {
+            float sign = flipDown ? -1f : 1f;
+
             for (int ring = 0; ring < rings; ring++)
             {
                 float phi0 = (ring / (float)rings) * Mathf.PI * 0.5f;
                 float phi1 = ((ring + 1) / (float)rings) * Mathf.PI * 0.5f;
-                float y0 = Mathf.Sin(phi0) * radius;
-                float y1 = Mathf.Sin(phi1) * radius;
+                float y0 = Mathf.Sin(phi0) * radius * sign;
+                float y1 = Mathf.Sin(phi1) * radius * sign;
                 float r0 = Mathf.Cos(phi0) * radius;
                 float r1 = Mathf.Cos(phi1) * radius;
 

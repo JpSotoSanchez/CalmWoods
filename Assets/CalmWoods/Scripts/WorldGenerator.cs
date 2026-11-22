@@ -897,64 +897,68 @@ namespace CalmWoods
             flowerMeshes = new[] { BuildWildflowerMesh() };
         }
 
-        // --- Pine tree: octagonal trunk, 4 overlapping foliage layers (10 sides each) ---
-        // Each layer's base sits well inside the previous layer so there are no visible gaps.
+        // --- Pine tree: octagonal trunk, 4 heavily overlapping foliage layers ---
+        // Each cone's base is pushed deep inside the previous one (50%+ overlap).
         static Mesh BuildPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.15f, 1.4f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 0.6f, 0f),  1.7f, 2.0f, 10, Palette.DarkLeaves);   // base 0.6, apex 2.6
-            mb.AddCone(new Vector3(0f, 1.4f, 0f),  1.4f, 2.0f, 10, Palette.Leaves);        // base 1.4, apex 3.4
-            mb.AddCone(new Vector3(0f, 2.2f, 0f),  1.1f, 1.8f, 10, Palette.Leaves);        // base 2.2, apex 4.0
-            mb.AddCone(new Vector3(0f, 3.0f, 0f),  0.7f, 1.6f, 10, Palette.BrightLeaves);  // base 3.0, apex 4.6
+            // Each layer's base Y is only ~0.6 above the previous (cones are ~2.0 tall).
+            mb.AddCone(new Vector3(0f, 0.5f, 0f),  1.8f, 2.2f, 10, Palette.DarkLeaves);   // apex 2.7
+            mb.AddCone(new Vector3(0f, 1.1f, 0f),  1.5f, 2.1f, 10, Palette.Leaves);        // apex 3.2
+            mb.AddCone(new Vector3(0f, 1.7f, 0f),  1.2f, 2.0f, 10, Palette.Leaves);        // apex 3.7
+            mb.AddCone(new Vector3(0f, 2.4f, 0f),  0.8f, 1.8f, 10, Palette.BrightLeaves);  // apex 4.2
             return mb.ToMesh("PinePlaceholder");
         }
 
-        // --- Tall pine variant: slimmer, taller silhouette, overlapping layers ---
+        // --- Tall pine variant: slimmer, taller silhouette ---
         static Mesh BuildTallPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.12f, 2.0f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 1.2f, 0f), 1.2f, 1.6f, 10, Palette.DarkLeaves);   // base 1.2, apex 2.8
-            mb.AddCone(new Vector3(0f, 1.9f, 0f), 1.0f, 1.6f, 10, Palette.Leaves);        // base 1.9, apex 3.5
-            mb.AddCone(new Vector3(0f, 2.6f, 0f), 0.8f, 1.5f, 10, Palette.Leaves);        // base 2.6, apex 4.1
-            mb.AddCone(new Vector3(0f, 3.3f, 0f), 0.55f, 1.3f, 10, Palette.BrightLeaves); // base 3.3, apex 4.6
-            mb.AddCone(new Vector3(0f, 3.9f, 0f), 0.30f, 1.0f, 8, Palette.BrightLeaves);  // base 3.9, apex 4.9
+            mb.AddCone(new Vector3(0f, 1.0f, 0f), 1.3f, 1.8f, 10, Palette.DarkLeaves);
+            mb.AddCone(new Vector3(0f, 1.6f, 0f), 1.1f, 1.8f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 2.2f, 0f), 0.9f, 1.7f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 2.8f, 0f), 0.6f, 1.5f, 10, Palette.BrightLeaves);
+            mb.AddCone(new Vector3(0f, 3.4f, 0f), 0.35f, 1.2f, 8, Palette.BrightLeaves);
             return mb.ToMesh("TallPinePlaceholder");
         }
 
-        // --- Broadleaf tree: thick trunk, hemisphere canopy with color variation ---
+        // --- Broadleaf tree: thick trunk, full sphere canopy (top hemisphere + bottom hemisphere) ---
+        // Two hemispheres facing opposite directions share the same center, forming a closed sphere
+        // with no seam. An extra offset blob adds organic irregularity.
         static Mesh BuildBroadleafMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.20f, 0.5f, 8, Palette.Trunk, true);
             mb.AddBox(new Vector3(0f, 0.9f, 0f), new Vector3(0.28f, 1.4f, 0.28f), Palette.Trunk);
 
-            // Main canopy — hemisphere dome
-            mb.AddHemisphere(new Vector3(0f, 2.4f, 0f), 2.0f, 3, 8, Palette.Leaves);
-            // Extra smaller blob on top for organic shape
-            mb.AddHemisphere(new Vector3(0.3f, 3.2f, 0.2f), 1.0f, 2, 6, Palette.BrightLeaves);
-            // Shadow blob underneath
-            mb.AddCone(new Vector3(0f, 2.4f, 0f), 1.8f, -0.8f, 8, Palette.DarkLeaves, false);
+            // Full sphere canopy: top half + bottom half, both centered at the same point.
+            Vector3 canopyCenter = new Vector3(0f, 2.8f, 0f);
+            mb.AddHemisphere(canopyCenter, 2.0f, 3, 8, Palette.Leaves);                              // top half
+            mb.AddHemisphere(canopyCenter, 2.0f, 2, 8, Palette.DarkLeaves, flipDown: true);           // bottom half
+            // Extra blob on top for organic asymmetry
+            mb.AddHemisphere(new Vector3(0.3f, 3.6f, 0.2f), 1.0f, 2, 6, Palette.BrightLeaves);
 
             return mb.ToMesh("BroadleafPlaceholder");
         }
 
-        // --- Birch tree: tall, slim trunk with smaller canopy ---
+        // --- Birch tree: tall, slim trunk with full-sphere canopy ---
         static Mesh BuildBirchMesh()
         {
             var mb = new LowPolyMeshBuilder();
-            // Slim white-ish trunk (using Snow palette for birch bark look)
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.10f, 2.6f, 8, Palette.Snow, true);
-            // Dark ring marks on the bark
             mb.AddBox(new Vector3(0f, 0.8f, 0f), new Vector3(0.14f, 0.08f, 0.14f), Palette.Trunk);
             mb.AddBox(new Vector3(0f, 1.5f, 0f), new Vector3(0.13f, 0.06f, 0.13f), Palette.Trunk);
 
-            // Airy canopy — two offset hemispheres
-            mb.AddHemisphere(new Vector3(-0.2f, 3.0f, 0f), 1.4f, 2, 8, Palette.BrightLeaves);
-            mb.AddHemisphere(new Vector3(0.3f, 3.4f, 0.1f), 1.1f, 2, 6, Palette.Leaves);
+            // Main canopy — full sphere (no gap at equator)
+            Vector3 c1 = new Vector3(-0.2f, 3.2f, 0f);
+            mb.AddHemisphere(c1, 1.4f, 2, 8, Palette.BrightLeaves);
+            mb.AddHemisphere(c1, 1.4f, 2, 8, Palette.Leaves, flipDown: true);
+            // Second offset blob
+            mb.AddHemisphere(new Vector3(0.3f, 3.6f, 0.1f), 1.0f, 2, 6, Palette.Leaves);
 
             return mb.ToMesh("BirchPlaceholder");
         }

@@ -32,6 +32,15 @@ public class VRCanvasController : MonoBehaviour
 
     private Coroutine fadeRoutine;
 
+    /// <summary>True from Open() until Close() is called.</summary>
+    public bool IsOpen { get; private set; }
+
+    public void Toggle()
+    {
+        if (IsOpen) Close();
+        else Open();
+    }
+
     private void Awake()
     {
         if (head == null && Camera.main != null)
@@ -76,6 +85,7 @@ public class VRCanvasController : MonoBehaviour
 
     public void Open()
     {
+        IsOpen = true;
         PlaceInFrontOfHead();
         canvasRoot.SetActive(true);
         StartFade(targetAlpha: 1f, deactivateAtEnd: false);
@@ -83,6 +93,7 @@ public class VRCanvasController : MonoBehaviour
 
     public void Close()
     {
+        IsOpen = false;
         // Block clicks immediately so the user can't press buttons while it fades out.
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;

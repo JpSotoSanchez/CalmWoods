@@ -784,7 +784,8 @@ namespace CalmWoods
                         int count = Mathf.FloorToInt(treesPerCell * f + (float)rng.NextDouble());
                         for (int k = 0; k < count && trees < maxTrees; k++)
                         {
-                            SpawnProp(c, treePrefabs, treeMeshes, treeScaleRange, "Tree", 0.08f);
+                            SpawnProp(c, treePrefabs, treeMeshes, treeScaleRange, "Tree", 0.08f,
+                                     addCollider: true, colliderHeight: 3.5f, colliderRadius: 0.3f);
                             trees++;
                         }
 
@@ -801,7 +802,8 @@ namespace CalmWoods
                               || ground[i, j] == Palette.DarkRock;
                     if (rng.NextDouble() < rockChance * (rocky ? 4f : 1f))
                     {
-                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock", 0.25f);
+                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock", 0.25f,
+                                 addCollider: true, colliderHeight: 0f, colliderRadius: 0.6f);
                         rocks++;
                     }
 
@@ -833,7 +835,8 @@ namespace CalmWoods
                       $"{N * N * 2} terrain tris.");
         }
 
-        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange, string propName, float sinkAmount)
+        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange,
+                       string propName, float sinkAmount, bool addCollider = false, float colliderHeight = 0f, float colliderRadius = 0f)
         {
             float x = cellCenter.x + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
             float z = cellCenter.y + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
@@ -857,6 +860,26 @@ namespace CalmWoods
             go.transform.localPosition = new Vector3(x, y, z);
             go.transform.localRotation = rot;
             go.transform.localScale = Vector3.one * s;
+
+            // Add a simple collider for trees and rocks so the player bumps into them.
+            if (addCollider && generateColliders)
+            {
+                if (colliderHeight > 0f)
+                {
+                    // Capsule for trees (tall and thin)
+                    var cap = go.AddComponent<CapsuleCollider>();
+                    cap.center = new Vector3(0f, colliderHeight * 0.5f, 0f);
+                    cap.height = colliderHeight;
+                    cap.radius = colliderRadius;
+                }
+                else
+                {
+                    // Sphere for rocks (short and round)
+                    var sph = go.AddComponent<SphereCollider>();
+                    sph.center = new Vector3(0f, colliderRadius * 0.4f, 0f);
+                    sph.radius = colliderRadius;
+                }
+            }
         }
 
         // ================= Placeholder meshes =================
@@ -874,30 +897,31 @@ namespace CalmWoods
             flowerMeshes = new[] { BuildWildflowerMesh() };
         }
 
-        // --- Pine tree: octagonal trunk, 4 tiered foliage layers (10 sides each) ---
+        // --- Pine tree: octagonal trunk, 4 overlapping foliage layers (10 sides each) ---
+        // Each layer's base sits well inside the previous layer so there are no visible gaps.
         static Mesh BuildPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.15f, 1.4f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 0.8f, 0f),  1.6f, 1.8f, 10, Palette.DarkLeaves);
-            mb.AddCone(new Vector3(0f, 1.8f, 0f),  1.3f, 1.8f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 2.8f, 0f),  1.0f, 1.6f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.6f, 0f),  0.65f, 1.4f, 10, Palette.BrightLeaves);
+            mb.AddCone(new Vector3(0f, 0.6f, 0f),  1.7f, 2.0f, 10, Palette.DarkLeaves);   // base 0.6, apex 2.6
+            mb.AddCone(new Vector3(0f, 1.4f, 0f),  1.4f, 2.0f, 10, Palette.Leaves);        // base 1.4, apex 3.4
+            mb.AddCone(new Vector3(0f, 2.2f, 0f),  1.1f, 1.8f, 10, Palette.Leaves);        // base 2.2, apex 4.0
+            mb.AddCone(new Vector3(0f, 3.0f, 0f),  0.7f, 1.6f, 10, Palette.BrightLeaves);  // base 3.0, apex 4.6
             return mb.ToMesh("PinePlaceholder");
         }
 
-        // --- Tall pine variant: slimmer, taller silhouette ---
+        // --- Tall pine variant: slimmer, taller silhouette, overlapping layers ---
         static Mesh BuildTallPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.12f, 2.0f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 1.4f, 0f), 1.1f, 1.5f, 10, Palette.DarkLeaves);
-            mb.AddCone(new Vector3(0f, 2.2f, 0f), 0.9f, 1.5f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.0f, 0f), 0.7f, 1.4f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.8f, 0f), 0.45f, 1.2f, 10, Palette.BrightLeaves);
-            mb.AddCone(new Vector3(0f, 4.4f, 0f), 0.25f, 0.9f, 8, Palette.BrightLeaves);
+            mb.AddCone(new Vector3(0f, 1.2f, 0f), 1.2f, 1.6f, 10, Palette.DarkLeaves);   // base 1.2, apex 2.8
+            mb.AddCone(new Vector3(0f, 1.9f, 0f), 1.0f, 1.6f, 10, Palette.Leaves);        // base 1.9, apex 3.5
+            mb.AddCone(new Vector3(0f, 2.6f, 0f), 0.8f, 1.5f, 10, Palette.Leaves);        // base 2.6, apex 4.1
+            mb.AddCone(new Vector3(0f, 3.3f, 0f), 0.55f, 1.3f, 10, Palette.BrightLeaves); // base 3.3, apex 4.6
+            mb.AddCone(new Vector3(0f, 3.9f, 0f), 0.30f, 1.0f, 8, Palette.BrightLeaves);  // base 3.9, apex 4.9
             return mb.ToMesh("TallPinePlaceholder");
         }
 

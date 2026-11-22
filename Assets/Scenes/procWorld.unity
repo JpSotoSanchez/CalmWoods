@@ -3356,7 +3356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeatherController
   modeSwitcher: {fileID: 1916464640}
   calmScore: {fileID: 1916464645}
-  center: {fileID: 605903580}
+  center: {fileID: 1254688333}
   debugLabel: {fileID: 0}
   clearSkyScore: 0.9
   stormScore: 0.1
@@ -3377,7 +3377,7 @@ MonoBehaviour:
   stormOrbitSpeed: 4
   calmColor: {r: 1, g: 1, b: 1, a: 1}
   stormColor: {r: 0.15, g: 0.17, b: 0.22, a: 1}
-  useDebugScore: 0
+  useDebugScore: 1
   debugScore: 0.5
 --- !u!4 &77479893
 Transform:
@@ -48496,6 +48496,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 28, z: 88}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &1254688333 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8806329115733545878, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
+  m_PrefabInstance: {fileID: 2093222411}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1258831339
 GameObject:
   m_ObjectHideFlags: 0

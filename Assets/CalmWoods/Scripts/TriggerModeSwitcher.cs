@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>
 /// Modes the app can be in. Exploration is the default; Feedback means the UI
@@ -13,16 +14,19 @@ public enum AppMode
 }
 
 /// <summary>
-/// Owns the current app mode. The right-hand trigger only OPENS Feedback mode,
-/// because the same trigger is used to click UI buttons with the controller ray;
-/// closing is done through ExitFeedback() (e.g. from a Close button in the UI).
+/// Owns the current app mode. The right-hand trigger toggles Feedback mode:
+/// it opens the UI, and closes it again as long as the controller ray is NOT
+/// pointing at the UI (otherwise the trigger is just clicking a UI button).
 /// Other systems subscribe to OnModeChanged and react on their own.
 /// </summary>
 public class TriggerModeSwitcher : MonoBehaviour
 {
     [Header("Input")]
-    [Tooltip("Button action bound to the right-hand trigger (e.g. <XRController>{RightHand}/triggerPressed).")]
+    [Tooltip("Button action bound to the right-hand trigger (e.g. <XRController>{RightHand}/{TriggerButton}).")]
     [SerializeField] private InputActionReference rightTriggerAction;
+
+    [Tooltip("Right-hand Near-Far interactor, used to know if the trigger is clicking UI.")]
+    [SerializeField] private NearFarInteractor rightInteractor;
 
     public AppMode CurrentMode { get; private set; } = AppMode.Exploration;
 
@@ -46,11 +50,22 @@ public class TriggerModeSwitcher : MonoBehaviour
 
     private void OnTriggerPerformed(InputAction.CallbackContext context)
     {
-        // Only open: while the UI is open the trigger is used to press its buttons.
         if (CurrentMode == AppMode.Exploration)
         {
             EnterFeedback();
+            return;
         }
+
+        // Feedback mode: if the ray is over the UI, the trigger is a button click, so ignore it.
+        if (IsPointingAtUI()) return;
+
+        ExitFeedback();
+    }
+
+    private bool IsPointingAtUI()
+    {
+        if (rightInteractor == null) return false;
+        return rightInteractor.TryGetCurrentUIRaycastResult(out _);
     }
 
     // Parameterless public methods so they can be wired to UI Button onClick events.

@@ -1,3 +1,4 @@
+using CalmWoods.Breathing;
 using TMPro;
 using UnityEngine;
 
@@ -59,12 +60,39 @@ public class CalmScoreCalculator : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float rateWeight = 0.7f;
     [SerializeField, Range(0f, 1f)] private float regularityWeight = 0.3f;
 
+    [Header("Following the guide (controller vs. breathing wheel)")]
+    [Tooltip("Compares, every frame, whether the chest is moving the way the wheel says. " +
+             "Reacts in seconds instead of waiting for whole breaths.")]
+    [SerializeField] private bool useGuideSync = true;
+
+    [Tooltip("Optional. Found automatically in the scene when empty.")]
+    [SerializeField] private BreathingGuide guide;
+
+    [Tooltip("How much of the score comes from following the wheel (the rest is rate + regularity).")]
+    [SerializeField, Range(0f, 1f)] private float syncWeight = 0.5f;
+
+    [Tooltip("Memory (s) of the sync score. Smaller = reacts faster, more jumpy.")]
+    [SerializeField] private float syncWindowSeconds = 4f;
+
+    [Tooltip("Seconds ignored at the start of each inhale/exhale (people react a bit late).")]
+    [SerializeField] private float phaseGraceSeconds = 0.6f;
+
+    [Tooltip("Chest speed (m/s) below which the user counts as 'not moving'. 0.002 = 2 mm/s.")]
+    [SerializeField] private float minChestSpeed = 0.002f;
+
     [Header("Smoothing")]
     [Tooltip("Score used until the first breathing estimate is available.")]
     [SerializeField, Range(0f, 1f)] private float startScore = 0.5f;
 
     [Tooltip("Time constant (s) of the smoothing. Larger = slower, calmer transitions.")]
-    [SerializeField] private float smoothingSeconds = 6f;
+    [SerializeField] private float smoothingSeconds = 3f;
+
+    [Tooltip("Seconds after the first data during which the score reacts much faster " +
+             "(so the sky answers right away), easing into the normal smoothing.")]
+    [SerializeField] private float quickStartSeconds = 8f;
+
+    [Tooltip("Smoothing (s) at the very start of the quick-start period.")]
+    [SerializeField] private float quickStartSmoothing = 0.4f;
 
     // ---- Public state ----
 
@@ -83,10 +111,18 @@ public class CalmScoreCalculator : MonoBehaviour
     public float CurrentRegularity { get; private set; }
     public ActiveSource Source { get; private set; } = ActiveSource.None;
 
+    /// <summary>0..1, how well the chest follows the wheel's inhale/exhale lately.</summary>
+    public float SyncScore { get; private set; }
+    public bool HasSync { get; private set; }
+
     private float debugTimer;
+    private float rateRegularityScore;
+    private bool hasRateEstimate;
+    private float dataSeconds;   // Time since the first usable data of this session
 
     private void Awake()
     {
+        if (guide == null) guide = FindAnyObjectByType<BreathingGuide>(FindObjectsInactive.Include);
         ResetScore();
     }
 
@@ -124,7 +160,15 @@ public class CalmScoreCalculator : MonoBehaviour
         CurrentBreathsPerMinute = 0f;
         CurrentRegularity = 0f;
         Source = ActiveSource.None;
+        SyncScore = startScore;
+        HasSync = false;
+        rateRegularityScore = startScore;
+        hasRateEstimate = false;
+        dataSeconds = 0f;
     }
+
+    // 0 at the first data, 1 once the quick-start period is over.
+    private float QuickStartProgress => quickStartSeconds > 0f ? Mathf.Clamp01(dataSeconds / quickStartSeconds) : 1f;
 
     private void Update()
     {
@@ -143,19 +187,68 @@ public class CalmScoreCalculator : MonoBehaviour
             RegularityScore = Mathf.InverseLerp(irregularValue, regularValue, regularity);
 
             float totalWeight = rateWeight + regularityWeight;
-            TargetScore = totalWeight > 0f
+            rateRegularityScore = totalWeight > 0f
                 ? (RateScore * rateWeight + RegularityScore * regularityWeight) / totalWeight
                 : RateScore;
+            hasRateEstimate = true;
+        }
 
+        UpdateSync(dt);
+
+        // Combine: following the wheel reacts in seconds; rate + regularity confirm it over breaths.
+        if (HasSync && hasRateEstimate)
+        {
+            TargetScore = Mathf.Lerp(rateRegularityScore, SyncScore, syncWeight);
             HasScore = true;
         }
-        // If no source has an estimate, the last target is kept (the score holds its value).
+        else if (HasSync)
+        {
+            TargetScore = SyncScore;   // Available after a few seconds, before any full breath.
+            HasScore = true;
+        }
+        else if (hasRateEstimate)
+        {
+            TargetScore = rateRegularityScore;
+            HasScore = true;
+        }
+        // If nothing is available yet, the last target is kept (the score holds its value).
 
         // Exponential smoothing, independent of the frame rate.
-        float alpha = 1f - Mathf.Exp(-dt / Mathf.Max(0.0001f, smoothingSeconds));
+        // Very fast right after the first data, then eases into the normal smoothing.
+        if (HasScore) dataSeconds += dt;
+        float smoothing = Mathf.Lerp(quickStartSmoothing, smoothingSeconds, QuickStartProgress);
+        float alpha = 1f - Mathf.Exp(-dt / Mathf.Max(0.0001f, smoothing));
         Score = Mathf.Lerp(Score, TargetScore, alpha);
 
         UpdateDebugLabel(dt);
+    }
+
+    // Compares the chest movement with the wheel's current phase.
+    //   Inhale on the wheel + chest rising  -> match (1)
+    //   Exhale on the wheel + chest falling -> match (1)
+    //   Opposite direction or not moving    -> no match (0)
+    // Hold phases are skipped (the chest barely moves, so the direction is just noise).
+    private void UpdateSync(float dt)
+    {
+        if (!useGuideSync || guide == null || controllerTracker == null) return;
+        if (!guide.IsPlaying || guide.IsWaitingToStart || !controllerTracker.HasSignal) return;
+
+        BreathPhase phase = guide.CurrentPhase;
+        if (phase != BreathPhase.Inhale && phase != BreathPhase.Exhale) return;
+
+        float secondsIntoPhase = guide.PhaseProgress * guide.Pattern.Duration(phase);
+        if (secondsIntoPhase < phaseGraceSeconds) return;
+
+        float speed = controllerTracker.Slope;
+        bool shouldRise = phase == BreathPhase.Inhale;
+        bool moving = Mathf.Abs(speed) >= minChestSpeed;
+        float match = moving && (speed > 0f) == shouldRise ? 1f : 0f;
+
+        // Short memory at the start (first answer in ~1-2 s), longer once it has data.
+        float window = Mathf.Lerp(1f, syncWindowSeconds, QuickStartProgress);
+        float alpha = 1f - Mathf.Exp(-dt / Mathf.Max(0.0001f, window));
+        SyncScore = Mathf.Lerp(SyncScore, match, alpha);
+        HasSync = true;
     }
 
     private bool TryGetEstimate(out float breathsPerMinute, out float regularity, out ActiveSource source)
@@ -223,6 +316,7 @@ public class CalmScoreCalculator : MonoBehaviour
 
         debugLabel.text =
             $"Calm score: {Score:F2} (target {TargetScore:F2})\n" +
+            $"Following wheel: {(HasSync ? SyncScore.ToString("F2") : "--")}\n" +
             $"Source: {Source}\n" +
             $"Rate: {CurrentBreathsPerMinute:F1}/min -> {RateScore:F2}\n" +
             $"Regularity: {CurrentRegularity:F2} -> {RegularityScore:F2}";

@@ -1343,7 +1343,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292931059
   m_fontColor: {r: 0.953, g: 0.929, b: 0.878, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4605,26 +4605,43 @@ MonoBehaviour:
   calmScore: {fileID: 1916464645}
   center: {fileID: 1254688333}
   debugLabel: {fileID: 0}
-  clearSkyScore: 0.9
-  stormScore: 0.1
-  responseSeconds: 2
+  clearSkyScore: 0.75
+  stormScore: 0.35
+  responseSeconds: 1
   cloudPrefab: {fileID: 0}
   cloudMaterial: {fileID: 2100000, guid: 1159a8b8fa8a1794ca5818f21ca9393f, type: 2}
   maxClouds: 14
   minClouds: 2
   puffsPerCloud: 3
   cloudScale: 12
-  stormSizeMultiplier: 1.6
+  stormSizeMultiplier: 2.2
   seed: 12345
   farRadius: 38
-  nearRadius: 12.7
-  calmHeight: 20.5
-  stormHeight: 18.9
+  nearRadius: 9
+  calmHeight: 28
+  stormHeight: 11
   calmOrbitSpeed: 0.5
-  stormOrbitSpeed: 4
+  stormOrbitSpeed: 9
   calmColor: {r: 1, g: 1, b: 1, a: 1}
-  stormColor: {r: 0.15, g: 0.17, b: 0.22, a: 1}
-  useDebugScore: 1
+  stormColor: {r: 0.07, g: 0.08, b: 0.11, a: 1}
+  breathTracker: {fileID: 0}
+  breathLift: 8
+  breathSwell: 0.15
+  breathSmoothing: 0.35
+  breathBrighten: 0.15
+  affectEnvironment: 1
+  stormSunIntensity: 0.3
+  stormSunTint: {r: 0.6, g: 0.66, b: 0.8, a: 1}
+  stormAmbient: 0.45
+  stormFogColor: {r: 0.3, g: 0.32, b: 0.36, a: 1}
+  stormFogDistance: 0.35
+  breathSunlight: 0.12
+  lightning: 0
+  lightningFromStress: 0.7
+  lightningInterval: {x: 6, y: 14}
+  lightningIntensity: 1.5
+  lightningSeconds: 0.3
+  useDebugScore: 0
   debugScore: 0.5
 --- !u!4 &77479893
 Transform:
@@ -13572,7 +13589,7 @@ MonoBehaviour:
     exhale: 4
     holdOut: 2
   playOnEnable: 1
-  startDelay: 5
+  startDelay: 2
   segmentsRoot: {fileID: 1497695418}
   ringSprite: {fileID: 21300000, guid: bae80004f9a88969d757c7accb22556a, type: 3}
   inhaleColor: {r: 0.94716984, g: 0.43922618, b: 0.062548816, a: 1}
@@ -27256,12 +27273,42 @@ MonoBehaviour:
       m_Flags: 0
     m_Flags: 0
     m_Priority: 0
+  continueInput:
+    m_Name: Continue
+    m_Type: 1
+    m_ExpectedControlType: 
+    m_Id: bfc0d0de-759d-4a61-a33b-ffecf4b9b1a7
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 15315e78-d60e-4206-805c-3307e0211f1c
+      m_Path: <XRController>{RightHand}/{TriggerButton}
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Continue
+      m_Flags: 0
+    - m_Name: 
+      m_Id: e9122417-90eb-4e75-9b3e-b5d25920d54b
+      m_Path: <XRController>{LeftHand}/{TriggerButton}
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Continue
+      m_Flags: 0
+    m_Flags: 0
+    m_Priority: 0
   moveHoldSeconds: 0.8
   showOnStart: 1
   startDelay: 1.5
   fadeSeconds: 0.3
-  readSeconds: 6
+  minReadSeconds: 1
+  skipHoldSeconds: 2
   stepDoneDelay: 1
+  continueHint: "Pull the trigger to continue  \xB7  Hold it to skip the tutorial"
+  tryItHint: "Try it now  \xB7  Hold the trigger to skip the tutorial"
+  skippingHint: Keep holding to skip the tutorial... {0}
   doneHint: Done!
   steps:
   - title: Welcome to Calm Woods
@@ -33648,7 +33695,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292931059
   m_fontColor: {r: 0.953, g: 0.929, b: 0.878, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -52348,7 +52395,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292931059
   m_fontColor: {r: 0.953, g: 0.929, b: 0.878, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -54690,7 +54737,10 @@ Material:
   m_CustomRenderQueue: 3000
   stringTagMap:
     RenderType: Transparent
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - DepthOnly
+  - SHADOWCASTER
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -54708,7 +54758,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 1521549763}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -54738,7 +54788,7 @@ Material:
     - _Cull: 2
     - _Cutoff: 0.5
     - _DstBlend: 10
-    - _DstBlendAlpha: 0
+    - _DstBlendAlpha: 10
     - _GlossinessSource: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -54754,7 +54804,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 0.2, g: 0.5, b: 0.65, a: 0.55}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.19999996, g: 0.5, b: 0.65, a: 0.55}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.6, g: 0.6, b: 0.7, a: 1}
   m_BuildTextureStacks: []
@@ -88066,7 +88116,7 @@ MonoBehaviour:
   controller: {fileID: 2093222413}
   head: {fileID: 2093222412}
   debugLabel: {fileID: 2089867831}
-  warmupSeconds: 5
+  warmupSeconds: 2
   jitterSmoothing: 0.3
   baselineSeconds: 10
   axisSeconds: 15
@@ -88074,7 +88124,7 @@ MonoBehaviour:
   minSignalMeters: 0.001
   thresholdFraction: 0.35
   minBreathInterval: 2
-  intervalsToAverage: 4
+  intervalsToAverage: 2
   staleSeconds: 25
   logDebug: 0
 --- !u!114 &1916464644
@@ -88090,7 +88140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MicrophoneBreathingTracker
   modeSwitcher: {fileID: 1916464640}
-  debugLabel: {fileID: 25140101}
+  debugLabel: {fileID: 0}
   sampleRate: 16000
   permissionTimeoutSeconds: 30
   envelopeSmoothing: 0.25
@@ -88100,7 +88150,7 @@ MonoBehaviour:
   minSignalRange: 0.002
   minBurstInterval: 1.5
   burstsPerBreath: 1
-  intervalsToAverage: 4
+  intervalsToAverage: 2
   staleSeconds: 20
   logDebug: 0
 --- !u!114 &1916464645
@@ -88118,7 +88168,7 @@ MonoBehaviour:
   modeSwitcher: {fileID: 1916464640}
   controllerTracker: {fileID: 1916464643}
   microphoneTracker: {fileID: 1916464644}
-  debugLabel: {fileID: 0}
+  debugLabel: {fileID: 25140101}
   sourceMode: 0
   calmRate: 6
   agitatedRate: 20
@@ -88126,8 +88176,14 @@ MonoBehaviour:
   regularValue: 0.9
   rateWeight: 0.7
   regularityWeight: 0.3
+  useGuideSync: 1
+  guide: {fileID: 0}
+  syncWeight: 0.5
+  syncWindowSeconds: 4
+  phaseGraceSeconds: 0.6
+  minChestSpeed: 0.002
   startScore: 0.5
-  smoothingSeconds: 6
+  smoothingSeconds: 2
 --- !u!114 &1916464646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94706,7 +94762,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4292931059
   m_fontColor: {r: 0.953, g: 0.929, b: 0.878, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -94826,7 +94882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122246761220, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 61.4
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122246761220, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94834,7 +94890,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122246761220, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40
+      value: 44.7
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122246761220, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -94850,7 +94906,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122508800755, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 35.73
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122508800755, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94882,7 +94938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122894124685, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 39.07
       objectReference: {fileID: 0}
     - target: {fileID: 2243020122894124685, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94922,7 +94978,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4750419573833148750, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 32.34
       objectReference: {fileID: 0}
     - target: {fileID: 4750419573833148750, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94962,7 +95018,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4750419574852684551, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 34.8
       objectReference: {fileID: 0}
     - target: {fileID: 4750419574852684551, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94998,7 +95054,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575382347206, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 61.4
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575382347206, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x
@@ -95006,7 +95062,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575382347206, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40
+      value: 44.7
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575382347206, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -95034,7 +95090,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575962273167, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 35.73
       objectReference: {fileID: 0}
     - target: {fileID: 4750419575962273167, guid: 77e7c27b2c5525e4aa8cc9f99d654486, type: 3}
       propertyPath: m_LocalPosition.x

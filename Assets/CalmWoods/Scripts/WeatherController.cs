@@ -36,7 +36,7 @@ public class WeatherController : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float stormScore = 0.1f;
 
     [Tooltip("Time constant (s) of the weather response. Larger = slower transitions.")]
-    [SerializeField] private float responseSeconds = 2f;
+    [SerializeField] private float responseSeconds = 1.5f;
 
     [Header("Clouds")]
     [Tooltip("Optional. If empty, simple clouds are built from squashed spheres. " +
@@ -84,6 +84,58 @@ public class WeatherController : MonoBehaviour
     [SerializeField] private Color calmColor = Color.white;
     [SerializeField] private Color stormColor = new Color(0.15f, 0.17f, 0.22f, 1f);
 
+    [Header("Breathing motion (the sky breathes with the user)")]
+    [Tooltip("Optional. Found automatically in the scene when empty.")]
+    [SerializeField] private ControllerBreathingTracker breathTracker;
+
+    [Tooltip("Meters the clouds rise on a full inhale (and sink on a full exhale).")]
+    [SerializeField] private float breathLift = 8f;
+
+    [Tooltip("Extra cloud size on a full inhale (0.15 = 15 % bigger).")]
+    [SerializeField, Range(0f, 0.4f)] private float breathSwell = 0.15f;
+
+    [Tooltip("Smoothing (s) of the breathing motion. Small = follows each breath closely.")]
+    [SerializeField] private float breathSmoothing = 0.35f;
+
+    [Tooltip("Clouds get this much brighter on a full inhale (0.15 = 15 %).")]
+    [SerializeField, Range(0f, 0.5f)] private float breathBrighten = 0.15f;
+
+    [Header("Environment (sun, ambient light, fog follow the stress)")]
+    [SerializeField] private bool affectEnvironment = true;
+
+    [Tooltip("Sun intensity multiplier at maximum stress.")]
+    [SerializeField, Range(0f, 1f)] private float stormSunIntensity = 0.3f;
+
+    [Tooltip("Sun color multiplier at maximum stress (cold and grey).")]
+    [SerializeField] private Color stormSunTint = new Color(0.6f, 0.66f, 0.8f, 1f);
+
+    [Tooltip("Ambient light multiplier at maximum stress.")]
+    [SerializeField, Range(0f, 1f)] private float stormAmbient = 0.45f;
+
+    [Tooltip("Fog color at maximum stress (stormy grey).")]
+    [SerializeField] private Color stormFogColor = new Color(0.3f, 0.32f, 0.36f, 1f);
+
+    [Tooltip("Fog distance multiplier at maximum stress (smaller = thicker fog).")]
+    [SerializeField, Range(0.1f, 1f)] private float stormFogDistance = 0.35f;
+
+    [Tooltip("Sun gets this much brighter on a full inhale (0.12 = 12 %).")]
+    [SerializeField, Range(0f, 0.5f)] private float breathSunlight = 0.12f;
+
+    [Header("Lightning (soft flashes in a strong storm)")]
+    [SerializeField] private bool lightning = true;
+
+    [Tooltip("Stress above which flashes can happen.")]
+    [SerializeField, Range(0f, 1f)] private float lightningFromStress = 0.7f;
+
+    [Tooltip("Seconds between flashes (random in this range; shorter as the storm grows).")]
+    [SerializeField] private Vector2 lightningInterval = new Vector2(6f, 14f);
+
+    [Tooltip("Extra sun intensity at the peak of a flash. Kept soft for comfort.")]
+    [SerializeField] private float lightningIntensity = 1.5f;
+
+    [Tooltip("How long a flash takes to fade.")]
+    [SerializeField] private float lightningSeconds = 0.3f;
+
     [Header("Testing")]
     [Tooltip("Ignore the real calm score and the mode toggle, and use the value below. Handy to tune the look without breathing.")]
     [SerializeField] private bool useDebugScore;
@@ -105,6 +157,20 @@ public class WeatherController : MonoBehaviour
 
     private float visualStress;
     private float orbitAngle;
+    private float breath;          // -1 = lungs empty, 1 = lungs full (smoothed)
+    private float flash;           // 0..1, current lightning flash
+    private float lightningTimer;
+
+    // Environment values set by the time of day, restored when the weather is calm.
+    private Light sun;
+    private bool baselineValid;
+    private bool environmentModified;
+    private float baseSunIntensity;
+    private Color baseSunColor;
+    private Color baseAmbientSky, baseAmbientEquator, baseAmbientGround;
+    private Color baseFogColor;
+    private float baseFogStart, baseFogEnd;
+    private CalmWoods.Environment.TimeOfDayManager timeOfDay;
 
     // Values kept for the debug label.
     private float lastRadius;
@@ -119,11 +185,35 @@ public class WeatherController : MonoBehaviour
             center = transform;
         }
 
+        if (breathTracker == null)
+        {
+            breathTracker = FindAnyObjectByType<ControllerBreathingTracker>(FindObjectsInactive.Include);
+        }
+
         BuildClouds();
+    }
+
+    private void Start()
+    {
+        // A new time of day changes the light: take it as the new calm baseline.
+        timeOfDay = CalmWoods.Environment.TimeOfDayManager.Instance;
+        if (timeOfDay != null) timeOfDay.Changed += OnTimeOfDayChanged;
+    }
+
+    private void OnTimeOfDayChanged(CalmWoods.Environment.TimeOfDay _)
+    {
+        CaptureBaseline();
+    }
+
+    private void OnDisable()
+    {
+        RestoreEnvironment();
     }
 
     private void OnDestroy()
     {
+        if (timeOfDay != null) timeOfDay.Changed -= OnTimeOfDayChanged;
+
         if (runtimeMaterial != null)
         {
             Destroy(runtimeMaterial);
@@ -257,7 +347,19 @@ public class WeatherController : MonoBehaviour
         float alpha = 1f - Mathf.Exp(-dt / Mathf.Max(0.0001f, responseSeconds));
         visualStress = Mathf.Lerp(visualStress, targetStress, alpha);
 
+        // Breathing motion: chest position relative to its typical range, -1..1.
+        float targetBreath = 0f;
+        if (feedbackActive && breathTracker != null && breathTracker.HasSignal)
+        {
+            float range = Mathf.Max(breathTracker.SignalRms * 1.4f, 0.002f);
+            targetBreath = Mathf.Clamp(breathTracker.Signal / range, -1f, 1f);
+        }
+        float breathAlpha = 1f - Mathf.Exp(-dt / Mathf.Max(0.0001f, breathSmoothing));
+        breath = Mathf.Lerp(breath, targetBreath, breathAlpha);
+
+        UpdateLightning(feedbackActive, dt);
         ApplyWeather(visualStress, dt);
+        UpdateEnvironment();
         UpdateDebugLabel(dt);
     }
 
@@ -265,9 +367,10 @@ public class WeatherController : MonoBehaviour
     private void ApplyWeather(float stress, float dt)
     {
         float radius = Mathf.Lerp(farRadius, nearRadius, stress);
-        float height = Mathf.Lerp(calmHeight, stormHeight, stress);
+        // The sky rises and swells with each inhale, and settles with each exhale.
+        float height = Mathf.Lerp(calmHeight, stormHeight, stress) + breath * breathLift;
         float orbitSpeed = Mathf.Lerp(calmOrbitSpeed, stormOrbitSpeed, stress);
-        float sizeMultiplier = Mathf.Lerp(1f, stormSizeMultiplier, stress);
+        float sizeMultiplier = Mathf.Lerp(1f, stormSizeMultiplier, stress) * (1f + breath * breathSwell);
 
         int lowest = Mathf.Clamp(minClouds, 0, clouds.Count);
         float visibleCount = Mathf.Lerp(lowest, clouds.Count, stress);
@@ -276,7 +379,11 @@ public class WeatherController : MonoBehaviour
 
         if (runtimeMaterial != null)
         {
-            runtimeMaterial.SetColor(colorPropertyId, Color.Lerp(calmColor, stormColor, stress));
+            // Storm darkens the clouds; each inhale brightens them a little; lightning lights them up.
+            Color color = Color.Lerp(calmColor, stormColor, stress) * (1f + breath * breathBrighten);
+            color = Color.Lerp(color, Color.white, flash * 0.7f);
+            color.a = 1f;
+            runtimeMaterial.SetColor(colorPropertyId, color);
         }
 
         Vector3 centerPosition = center.position;
@@ -306,6 +413,102 @@ public class WeatherController : MonoBehaviour
         lastRadius = radius;
         lastHeight = height;
         lastVisibleCount = visibleCount;
+    }
+
+    // ------------------------------------------------------------------
+    // Lightning and environment
+    // ------------------------------------------------------------------
+
+    private void UpdateLightning(bool feedbackActive, float dt)
+    {
+        flash = Mathf.Max(0f, flash - dt / Mathf.Max(0.01f, lightningSeconds));
+
+        if (!lightning || !feedbackActive || visualStress < lightningFromStress)
+        {
+            lightningTimer = Random.Range(lightningInterval.x, lightningInterval.y) * 0.5f;
+            return;
+        }
+
+        lightningTimer -= dt;
+        if (lightningTimer > 0f) return;
+
+        flash = 1f;
+        // Stronger storm = flashes a bit more often.
+        float severity = Mathf.InverseLerp(lightningFromStress, 1f, visualStress);
+        lightningTimer = Random.Range(lightningInterval.x, lightningInterval.y) * Mathf.Lerp(1.3f, 0.7f, severity);
+    }
+
+    private void UpdateEnvironment()
+    {
+        if (!affectEnvironment) return;
+
+        bool atRest = visualStress < 0.003f && Mathf.Abs(breath) < 0.003f && flash <= 0f;
+        if (atRest)
+        {
+            // Put the exact time-of-day values back, then keep following them while calm.
+            if (environmentModified) RestoreEnvironment();
+            else CaptureBaseline();
+            return;
+        }
+
+        if (!baselineValid) CaptureBaseline();
+        environmentModified = true;
+        float s = visualStress;
+
+        if (sun != null)
+        {
+            float intensity = baseSunIntensity * Mathf.Lerp(1f, stormSunIntensity, s) * (1f + breath * breathSunlight);
+            sun.intensity = intensity + flash * lightningIntensity;
+            Color sunColor = Color.Lerp(baseSunColor, baseSunColor * stormSunTint, s);
+            sun.color = Color.Lerp(sunColor, Color.white, flash);
+        }
+
+        float ambient = Mathf.Lerp(1f, stormAmbient, s);
+        Color flashAmbient = Color.white * (flash * 0.5f);
+        RenderSettings.ambientSkyColor = baseAmbientSky * ambient + flashAmbient;
+        RenderSettings.ambientEquatorColor = baseAmbientEquator * ambient + flashAmbient;
+        RenderSettings.ambientGroundColor = baseAmbientGround * ambient + flashAmbient * 0.5f;
+
+        RenderSettings.fogColor = Color.Lerp(baseFogColor, stormFogColor, s * 0.85f);
+        float fogScale = Mathf.Lerp(1f, stormFogDistance, s);
+        RenderSettings.fogStartDistance = baseFogStart * fogScale;
+        RenderSettings.fogEndDistance = Mathf.Max(baseFogEnd * fogScale, RenderSettings.fogStartDistance + 1f);
+    }
+
+    private void CaptureBaseline()
+    {
+        sun = RenderSettings.sun;
+        if (sun != null)
+        {
+            baseSunIntensity = sun.intensity;
+            baseSunColor = sun.color;
+        }
+        baseAmbientSky = RenderSettings.ambientSkyColor;
+        baseAmbientEquator = RenderSettings.ambientEquatorColor;
+        baseAmbientGround = RenderSettings.ambientGroundColor;
+        baseFogColor = RenderSettings.fogColor;
+        baseFogStart = RenderSettings.fogStartDistance;
+        baseFogEnd = RenderSettings.fogEndDistance;
+        baselineValid = true;
+        environmentModified = false;
+    }
+
+    private void RestoreEnvironment()
+    {
+        if (!baselineValid || !environmentModified) return;
+
+        if (sun != null)
+        {
+            sun.intensity = baseSunIntensity;
+            sun.color = baseSunColor;
+        }
+        RenderSettings.ambientSkyColor = baseAmbientSky;
+        RenderSettings.ambientEquatorColor = baseAmbientEquator;
+        RenderSettings.ambientGroundColor = baseAmbientGround;
+        RenderSettings.fogColor = baseFogColor;
+        RenderSettings.fogStartDistance = baseFogStart;
+        RenderSettings.fogEndDistance = baseFogEnd;
+        environmentModified = false;
     }
 
     private void UpdateDebugLabel(float dt)

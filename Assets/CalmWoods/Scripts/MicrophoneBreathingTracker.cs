@@ -54,7 +54,7 @@ public class MicrophoneBreathingTracker : MonoBehaviour
     [SerializeField, Range(1, 2)] private int burstsPerBreath = 1;
 
     [Tooltip("How many recent intervals are averaged to estimate the rate.")]
-    [SerializeField] private int intervalsToAverage = 4;
+    [SerializeField] private int intervalsToAverage = 2;
 
     [Tooltip("If no breath is detected for this long, the estimate is discarded.")]
     [SerializeField] private float staleSeconds = 20f;

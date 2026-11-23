@@ -57,7 +57,8 @@ public class ControllerBreathingTracker : MonoBehaviour
     [SerializeField, Range(0.1f, 0.8f)] private float thresholdFraction = 0.35f;
 
     [SerializeField] private float minBreathInterval = 2f;
-    [SerializeField] private int intervalsToAverage = 4;
+    [Tooltip("Breaths averaged for the rate. Fewer = reacts faster, a bit noisier.")]
+    [SerializeField] private int intervalsToAverage = 2;
 
     [Tooltip("If no breath is detected for this long, the estimate is discarded.")]
     [SerializeField] private float staleSeconds = 25f;
@@ -75,6 +76,12 @@ public class ControllerBreathingTracker : MonoBehaviour
 
     /// <summary>True when the chest movement is large enough to be a breathing signal.</summary>
     public bool HasSignal { get; private set; }
+
+    /// <summary>Typical size of the breathing movement (RMS of Signal), in meters.</summary>
+    public float SignalRms { get; private set; }
+
+    /// <summary>Smoothed speed of the chest along the axis, m/s (positive = inhaling).</summary>
+    public float Slope => slope;
 
     public float BreathsPerMinute { get; private set; }
 
@@ -168,6 +175,7 @@ public class ControllerBreathingTracker : MonoBehaviour
         Signal = 0f;
         IsInhaling = false;
         HasSignal = false;
+        SignalRms = 0f;
         LastBreathAmplitude = 0f;
         ResetEstimate();
 
@@ -264,6 +272,7 @@ public class ControllerBreathingTracker : MonoBehaviour
 
         signalMeanSquare = Mathf.Lerp(signalMeanSquare, Signal * Signal, memoryAlpha);
         float rms = Mathf.Sqrt(signalMeanSquare);
+        SignalRms = rms;
         HasSignal = rms >= minSignalMeters;
 
         // 5) Breath detection (ignored during the warm-up / settling time).

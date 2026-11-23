@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 811b8dc3ef3ea459abecdc17cebb1196, type: 3}
+  m_Name: CalmWoodsUITheme
+  m_EditorClassIdentifier: 
+  font: {fileID: 11400000, guid: f675742eaf9c20a4f909d78ee7a14fed, type: 2}
+  titleSize: 72
+  headingSize: 48
+  bodySize: 36
+  captionSize: 28
+  buttonSize: 40
+  titleSpacing: 4
+  panel: {r: 0.118, g: 0.169, b: 0.133, a: 0.88}
+  surface: {r: 0.18, g: 0.247, b: 0.2, a: 1}
+  primary: {r: 0.878, g: 0.627, b: 0.251, a: 1}
+  textPrimary: {r: 0.953, g: 0.929, b: 0.878, a: 1}
+  textSecondary: {r: 0.788, g: 0.761, b: 0.69, a: 1}
+  textOnPrimary: {r: 0.118, g: 0.169, b: 0.133, a: 1}
+  sliderTrack: {r: 0.231, g: 0.302, b: 0.251, a: 1}
+  sliderFill: {r: 0.561, g: 0.749, b: 0.541, a: 1}
+  sliderHandle: {r: 0.953, g: 0.929, b: 0.878, a: 1}
+  normalTint: {r: 0.88, g: 0.88, b: 0.88, a: 1}
+  highlightedTint: {r: 1, g: 1, b: 1, a: 1}
+  pressedTint: {r: 0.72, g: 0.72, b: 0.72, a: 1}
+  disabledTint: {r: 0.55, g: 0.55, b: 0.55, a: 0.5}
+  fadeDuration: 0.08
+  buttonSprite: {fileID: 21300000, guid: 57c0c324194dc3ce3e57abc4b6fc690c, type: 3}
+  panelSprite: {fileID: 21300000, guid: 1c1c38b629f584119be0b3091c89f268, type: 3}
+  pillSprite: {fileID: 21300000, guid: 54ceed1ce857a7f0110c3241e7070335, type: 3}
+  handleSprite: {fileID: 21300000, guid: 322f985322df3d5ecea9d0b33f816cdf, type: 3}
+  handleOversize: 24

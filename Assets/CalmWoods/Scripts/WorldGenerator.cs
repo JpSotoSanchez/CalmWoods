@@ -576,6 +576,17 @@ namespace CalmWoods
             return false;
         }
 
+        // Cardinal-only version (no diagonals) — used for the water mesh so isolated
+        // corner-touching sand cells don't get a stray water quad.
+        bool TouchesWaterCardinal(int i, int j)
+        {
+            if (i > 0     && isWater[i - 1, j]) return true;
+            if (i < N - 1 && isWater[i + 1, j]) return true;
+            if (j > 0     && isWater[i, j - 1]) return true;
+            if (j < N - 1 && isWater[i, j + 1]) return true;
+            return false;
+        }
+
         static float Percentile(List<float> values, float fraction)
         {
             if (values.Count == 0) return float.MaxValue;
@@ -590,35 +601,25 @@ namespace CalmWoods
         {
             if (!generateLake || !lakeHasDock) return;
 
+            // Find the shore cell (Sand, touching water) closest to the lake center
+            // so the dock is always right at the water's edge.
             int bestI = -1, bestJ = -1;
             float bestDist = float.MaxValue;
-            Vector2 bestDir = Vector2.zero;
-            int[] dis = { 1, -1, 0, 0 };
-            int[] djs = { 0, 0, 1, -1 };
 
             for (int i = 0; i < N; i++)
             {
                 for (int j = 0; j < N; j++)
                 {
                     if (isWater[i, j] || ground[i, j] != Palette.Sand) continue;
+                    if (!TouchesWater(i, j)) continue;
 
-                    Vector2 dir = Vector2.zero;
-                    for (int k = 0; k < 4; k++)
-                    {
-                        int ni = i + dis[k];
-                        int nj = j + djs[k];
-                        if (ni < 0 || nj < 0 || ni >= N || nj >= N) continue;
-                        if (isWater[ni, nj]) dir += new Vector2(dis[k], djs[k]);
-                    }
-                    if (dir == Vector2.zero) continue;
-
-                    float dist = CellCenter(i, j).magnitude;
+                    Vector2 cc = CellCenter(i, j);
+                    float dist = (cc - lakeCenter).magnitude;
                     if (dist < bestDist)
                     {
                         bestDist = dist;
                         bestI = i;
                         bestJ = j;
-                        bestDir = dir.normalized;
                     }
                 }
             }
@@ -629,10 +630,15 @@ namespace CalmWoods
                 return;
             }
 
+            // Direction: always point from shore toward the lake center so the dock
+            // faces the water no matter which side it spawns on.
             Vector2 c = CellCenter(bestI, bestJ);
-            Vector3 forward = new Vector3(bestDir.x, 0f, bestDir.y);
-            Vector3 start = new Vector3(c.x, waterLevel + dockHeightAboveWater, c.y) - forward * (cellSize * 0.5f);
+            Vector2 toLake = (lakeCenter - c).normalized;
+            Vector3 forward = new Vector3(toLake.x, 0f, toLake.y);
+            // Start the dock one cell toward the lake so its far end extends over water.
+            Vector3 start = new Vector3(c.x, waterLevel + dockHeightAboveWater, c.y) + forward * (cellSize * 0.5f);
 
+            // Reserve cells under and around the dock so no trees grow through it.
             for (float s = -cellSize; s <= dockLength + cellSize; s += cellSize * 0.5f)
             {
                 Vector3 p = start + forward * s;
@@ -661,6 +667,14 @@ namespace CalmWoods
             }
             dock.transform.localPosition = start;
             dock.transform.localRotation = rotation;
+
+            // Collider so the player can walk on the dock and bump into it.
+            if (generateColliders)
+            {
+                var col = dock.AddComponent<BoxCollider>();
+                col.center = new Vector3(0f, 0f, dockLength * 0.5f);
+                col.size = new Vector3(dockWidth, 0.2f, dockLength);
+            }
         }
 
         Mesh BuildDockMesh()
@@ -727,30 +741,38 @@ namespace CalmWoods
 
         void BuildWaterMesh()
         {
-            int minI = int.MaxValue, minJ = int.MaxValue, maxI = int.MinValue, maxJ = int.MinValue;
+            // Build the water surface from water cells + shore cells (Sand touching water).
+            // Including shore cells softens the blocky edges — the water extends slightly
+            // under the beach, which looks like a natural waterline from ground level in VR.
+            var mb = new LowPolyMeshBuilder();
+            bool anyWater = false;
+
             for (int i = 0; i < N; i++)
             {
                 for (int j = 0; j < N; j++)
                 {
-                    if (!isWater[i, j]) continue;
-                    minI = Mathf.Min(minI, i);
-                    maxI = Mathf.Max(maxI, i);
-                    minJ = Mathf.Min(minJ, j);
-                    maxJ = Mathf.Max(maxJ, j);
+                    bool include = isWater[i, j];
+                    // Also cover shore cells that share an edge (not diagonal) with water,
+                    // so the waterline extends slightly under the beach.
+                    if (!include && ground[i, j] == Palette.Sand && TouchesWaterCardinal(i, j))
+                        include = true;
+
+                    if (!include) continue;
+                    anyWater = true;
+
+                    float x0 = (i - N * 0.5f) * cellSize;
+                    float x1 = x0 + cellSize;
+                    float z0 = (j - N * 0.5f) * cellSize;
+                    float z1 = z0 + cellSize;
+
+                    mb.AddQuad(
+                        new Vector3(x0, waterLevel, z0), new Vector3(x0, waterLevel, z1),
+                        new Vector3(x1, waterLevel, z1), new Vector3(x1, waterLevel, z0),
+                        Palette.Water, Vector3.up);
                 }
             }
-            if (minI == int.MaxValue) return;
 
-            float x0 = (minI - 1 - N * 0.5f) * cellSize;
-            float x1 = (maxI + 2 - N * 0.5f) * cellSize;
-            float z0 = (minJ - 1 - N * 0.5f) * cellSize;
-            float z1 = (maxJ + 2 - N * 0.5f) * cellSize;
-
-            var mb = new LowPolyMeshBuilder();
-            mb.AddQuad(
-                new Vector3(x0, waterLevel, z0), new Vector3(x0, waterLevel, z1),
-                new Vector3(x1, waterLevel, z1), new Vector3(x1, waterLevel, z0),
-                Palette.Water, Vector3.up);
+            if (!anyWater) return;
 
             var go = new GameObject("Water");
             go.transform.SetParent(worldRoot, false);

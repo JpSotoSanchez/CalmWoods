@@ -784,7 +784,8 @@ namespace CalmWoods
                         int count = Mathf.FloorToInt(treesPerCell * f + (float)rng.NextDouble());
                         for (int k = 0; k < count && trees < maxTrees; k++)
                         {
-                            SpawnProp(c, treePrefabs, treeMeshes, treeScaleRange, "Tree", 0.08f);
+                            SpawnProp(c, treePrefabs, treeMeshes, treeScaleRange, "Tree", 0.08f,
+                                     addCollider: true, colliderHeight: 3.5f, colliderRadius: 0.3f);
                             trees++;
                         }
 
@@ -801,7 +802,8 @@ namespace CalmWoods
                               || ground[i, j] == Palette.DarkRock;
                     if (rng.NextDouble() < rockChance * (rocky ? 4f : 1f))
                     {
-                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock", 0.25f);
+                        SpawnProp(c, rockPrefabs, rockMeshes, rockScaleRange, "Rock", 0.25f,
+                                 addCollider: true, colliderHeight: 0f, colliderRadius: 0.6f);
                         rocks++;
                     }
 
@@ -833,7 +835,8 @@ namespace CalmWoods
                       $"{N * N * 2} terrain tris.");
         }
 
-        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange, string propName, float sinkAmount)
+        void SpawnProp(Vector2 cellCenter, GameObject[] prefabs, Mesh[] meshes, Vector2 scaleRange,
+                       string propName, float sinkAmount, bool addCollider = false, float colliderHeight = 0f, float colliderRadius = 0f)
         {
             float x = cellCenter.x + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
             float z = cellCenter.y + ((float)rng.NextDouble() - 0.5f) * cellSize * 0.9f;
@@ -857,6 +860,26 @@ namespace CalmWoods
             go.transform.localPosition = new Vector3(x, y, z);
             go.transform.localRotation = rot;
             go.transform.localScale = Vector3.one * s;
+
+            // Add a simple collider for trees and rocks so the player bumps into them.
+            if (addCollider && generateColliders)
+            {
+                if (colliderHeight > 0f)
+                {
+                    // Capsule for trees (tall and thin)
+                    var cap = go.AddComponent<CapsuleCollider>();
+                    cap.center = new Vector3(0f, colliderHeight * 0.5f, 0f);
+                    cap.height = colliderHeight;
+                    cap.radius = colliderRadius;
+                }
+                else
+                {
+                    // Sphere for rocks (short and round)
+                    var sph = go.AddComponent<SphereCollider>();
+                    sph.center = new Vector3(0f, colliderRadius * 0.4f, 0f);
+                    sph.radius = colliderRadius;
+                }
+            }
         }
 
         // ================= Placeholder meshes =================
@@ -874,16 +897,18 @@ namespace CalmWoods
             flowerMeshes = new[] { BuildWildflowerMesh() };
         }
 
-        // --- Pine tree: octagonal trunk, 4 tiered foliage layers (10 sides each) ---
+        // --- Pine tree: octagonal trunk, 4 heavily overlapping foliage layers ---
+        // Each cone's base is pushed deep inside the previous one (50%+ overlap).
         static Mesh BuildPineMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.15f, 1.4f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 0.8f, 0f),  1.6f, 1.8f, 10, Palette.DarkLeaves);
-            mb.AddCone(new Vector3(0f, 1.8f, 0f),  1.3f, 1.8f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 2.8f, 0f),  1.0f, 1.6f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.6f, 0f),  0.65f, 1.4f, 10, Palette.BrightLeaves);
+            // Each layer's base Y is only ~0.6 above the previous (cones are ~2.0 tall).
+            mb.AddCone(new Vector3(0f, 0.5f, 0f),  1.8f, 2.2f, 10, Palette.DarkLeaves);   // apex 2.7
+            mb.AddCone(new Vector3(0f, 1.1f, 0f),  1.5f, 2.1f, 10, Palette.Leaves);        // apex 3.2
+            mb.AddCone(new Vector3(0f, 1.7f, 0f),  1.2f, 2.0f, 10, Palette.Leaves);        // apex 3.7
+            mb.AddCone(new Vector3(0f, 2.4f, 0f),  0.8f, 1.8f, 10, Palette.BrightLeaves);  // apex 4.2
             return mb.ToMesh("PinePlaceholder");
         }
 
@@ -893,44 +918,47 @@ namespace CalmWoods
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.12f, 2.0f, 8, Palette.Trunk, true);
 
-            mb.AddCone(new Vector3(0f, 1.4f, 0f), 1.1f, 1.5f, 10, Palette.DarkLeaves);
-            mb.AddCone(new Vector3(0f, 2.2f, 0f), 0.9f, 1.5f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.0f, 0f), 0.7f, 1.4f, 10, Palette.Leaves);
-            mb.AddCone(new Vector3(0f, 3.8f, 0f), 0.45f, 1.2f, 10, Palette.BrightLeaves);
-            mb.AddCone(new Vector3(0f, 4.4f, 0f), 0.25f, 0.9f, 8, Palette.BrightLeaves);
+            mb.AddCone(new Vector3(0f, 1.0f, 0f), 1.3f, 1.8f, 10, Palette.DarkLeaves);
+            mb.AddCone(new Vector3(0f, 1.6f, 0f), 1.1f, 1.8f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 2.2f, 0f), 0.9f, 1.7f, 10, Palette.Leaves);
+            mb.AddCone(new Vector3(0f, 2.8f, 0f), 0.6f, 1.5f, 10, Palette.BrightLeaves);
+            mb.AddCone(new Vector3(0f, 3.4f, 0f), 0.35f, 1.2f, 8, Palette.BrightLeaves);
             return mb.ToMesh("TallPinePlaceholder");
         }
 
-        // --- Broadleaf tree: thick trunk, hemisphere canopy with color variation ---
+        // --- Broadleaf tree: thick trunk, full sphere canopy (top hemisphere + bottom hemisphere) ---
+        // Two hemispheres facing opposite directions share the same center, forming a closed sphere
+        // with no seam. An extra offset blob adds organic irregularity.
         static Mesh BuildBroadleafMesh()
         {
             var mb = new LowPolyMeshBuilder();
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.20f, 0.5f, 8, Palette.Trunk, true);
             mb.AddBox(new Vector3(0f, 0.9f, 0f), new Vector3(0.28f, 1.4f, 0.28f), Palette.Trunk);
 
-            // Main canopy — hemisphere dome
-            mb.AddHemisphere(new Vector3(0f, 2.4f, 0f), 2.0f, 3, 8, Palette.Leaves);
-            // Extra smaller blob on top for organic shape
-            mb.AddHemisphere(new Vector3(0.3f, 3.2f, 0.2f), 1.0f, 2, 6, Palette.BrightLeaves);
-            // Shadow blob underneath
-            mb.AddCone(new Vector3(0f, 2.4f, 0f), 1.8f, -0.8f, 8, Palette.DarkLeaves, false);
+            // Full sphere canopy: top half + bottom half, both centered at the same point.
+            Vector3 canopyCenter = new Vector3(0f, 2.8f, 0f);
+            mb.AddHemisphere(canopyCenter, 2.0f, 3, 8, Palette.Leaves);                              // top half
+            mb.AddHemisphere(canopyCenter, 2.0f, 2, 8, Palette.DarkLeaves, flipDown: true);           // bottom half
+            // Extra blob on top for organic asymmetry
+            mb.AddHemisphere(new Vector3(0.3f, 3.6f, 0.2f), 1.0f, 2, 6, Palette.BrightLeaves);
 
             return mb.ToMesh("BroadleafPlaceholder");
         }
 
-        // --- Birch tree: tall, slim trunk with smaller canopy ---
+        // --- Birch tree: tall, slim trunk with full-sphere canopy ---
         static Mesh BuildBirchMesh()
         {
             var mb = new LowPolyMeshBuilder();
-            // Slim white-ish trunk (using Snow palette for birch bark look)
             mb.AddCone(new Vector3(0f, 0f, 0f), 0.10f, 2.6f, 8, Palette.Snow, true);
-            // Dark ring marks on the bark
             mb.AddBox(new Vector3(0f, 0.8f, 0f), new Vector3(0.14f, 0.08f, 0.14f), Palette.Trunk);
             mb.AddBox(new Vector3(0f, 1.5f, 0f), new Vector3(0.13f, 0.06f, 0.13f), Palette.Trunk);
 
-            // Airy canopy — two offset hemispheres
-            mb.AddHemisphere(new Vector3(-0.2f, 3.0f, 0f), 1.4f, 2, 8, Palette.BrightLeaves);
-            mb.AddHemisphere(new Vector3(0.3f, 3.4f, 0.1f), 1.1f, 2, 6, Palette.Leaves);
+            // Main canopy — full sphere (no gap at equator)
+            Vector3 c1 = new Vector3(-0.2f, 3.2f, 0f);
+            mb.AddHemisphere(c1, 1.4f, 2, 8, Palette.BrightLeaves);
+            mb.AddHemisphere(c1, 1.4f, 2, 8, Palette.Leaves, flipDown: true);
+            // Second offset blob
+            mb.AddHemisphere(new Vector3(0.3f, 3.6f, 0.1f), 1.0f, 2, 6, Palette.Leaves);
 
             return mb.ToMesh("BirchPlaceholder");
         }

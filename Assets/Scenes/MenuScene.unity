@@ -9338,13 +9338,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    Lorem Ipsum has been the industry's standard dummy text ever since 1966, when
-    designers at Letraset and James Mosley, the librarian at St Bride Printing Library
-    in London, took a 1914 Cicero translation and scrambled it to make dummy text
-    for Letraset's Body Type sheets. It has survived not only many decades, took
-    a 1914 Cicero translation and scrambled it to make dummy text for Letraset's
-    Body Type sheets. It has survived not only many decades
+  m_text: "Calm Woods is a peaceful VR forest that helps you relax through guided
+    breathing.\n\nEvery session creates a new landscape with hills, mountains, a
+    lake and a wooden dock. When you open the breathing exercise, follow the wheel:
+    inhale, hold, exhale, hold. Rest your controller on your chest and the world
+    will respond to your breathing. Fast or irregular breathing brings wind and storm
+    clouds. As your breathing slows down, the sky clears.\n\nChoose your time of
+    day and adjust the music and nature sounds whenever you like.\n\nB: Breathing
+    exercise \xB7 Y: Options\n\nCalm Woods is a relaxation aid, not a medical treatment.\n\nMade
+    by Kenzo Matoo L\xF3pez, Jaime Rinc\xF3n Burboa and Jos\xE9 Pablo Soto S\xE1nchez\nHuman
+    Computer Interaction \xB7 Universidad Panamericana"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f675742eaf9c20a4f909d78ee7a14fed, type: 2}
   m_sharedMaterial: {fileID: 4687939059374929122, guid: f675742eaf9c20a4f909d78ee7a14fed, type: 2}

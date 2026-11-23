@@ -1,1 +1,188 @@
-# CalmWoods
+# Calm Woods
+
+**A procedurally generated VR forest for stress management and guided breathing.**
+
+| | |
+|---|---|
+| **Course** | Human Computer Interaction, Final Project (Universidad Panamericana) |
+| **Platform** | Meta Quest 2 / Meta Quest 3 (standalone, Android) |
+| **Engine** | Unity 6000.5.7f1 · URP · OpenXR · XR Interaction Toolkit 3.5 |
+| **Team** | Kenzo Matoo López · Jaime Rincón Burboa · José Pablo Soto Sánchez |
+| **Figma prototype** | TODO: link |
+| **Executable (APK)** | TODO: link |
+| **Commercial** | TODO: link |
+
+> Calm Woods is a relaxation aid. It is **not a medical treatment**.
+
+---
+
+## 1. The problem
+
+Stress is one of the most common social problems today. It affects people's health, their academic and work performance, and their overall quality of life. Many people do not have tools that are both **accessible** and **engaging** for relaxing and regulating stress in everyday life.
+
+Virtual reality fully immerses the user in a calm environment, which reduces outside distractions and makes relaxation exercises more engaging than they are on a regular screen.
+
+## 2. Target users
+
+**Adults (18+) who feel stress regularly in everyday life.** Their stress is frequent but not clinical, and it comes from juggling work or study, constant deadlines and a lot of screen time. Many of them have little or no VR experience.
+
+Our working persona, **"Ana," 27**, describes them as follows:
+
+| | |
+|---|---|
+| **Goals** | Calm down quickly, feel she is "doing something that works," and not waste time |
+| **Current behavior** | Scrolls her phone, listens to music or takes a walk. She tried a meditation app but dropped it because it felt boring or hard to measure |
+| **Constraints** | Little time, skeptical that relaxation tools work, slightly nervous about motion sickness |
+| **Needs** | Zero learning curve, visible proof that it works, and a comfortable experience |
+
+These needs shape the solution. The weather gives *visible proof* that the user is calming down, without numbers. Defaults for time of day and volume let the user *start right away*. The session is *seated* to keep it *comfortable*.
+
+> The persona and customer journey are hypotheses based on the proposal and general knowledge about stress and VR. User testing will confirm or correct them. See [`UserResearch.md`](Documentation/UserResearch.md).
+
+## 3. The solution
+
+Calm Woods places the user in a quiet natural setting and guides them through a breathing exercise. **The world reacts to how they breathe**: the more agitated the breathing, the stormier the sky; as the breathing calms down, the clouds clear. The user does not need to read numbers or charts to see their progress; the environment shows it.
+
+### Main features
+
+| Feature | What it does |
+|---|---|
+| **Procedural forest** | A new low-poly landscape is generated every session: rolling hills, mountains framing the horizon, a lake with a wooden dock, tree clusters, rocks, bushes, grass and wildflowers. A clearing is always kept free around the starting point so the user has a comfortable place to stand or sit. |
+| **Guided breathing wheel** | A world-space ring split into colored arcs (inhale / hold / exhale / hold) using a **4-2-4-2** pattern (inhale 4 s, hold 2 s, exhale 4 s, hold 2 s). A marker moves around the ring, a center circle grows on inhale and shrinks on exhale, and a label and countdown say what to do. A 5-second "GET READY" gives the user time to get into position. |
+| **Breathing detection** | The user rests a controller on their chest; its motion gives the breathing rate and regularity. The headset microphone is used as a fallback when the controller gives no estimate. |
+| **Calm score** | Breathing rate (70%) and regularity (30%) are combined into a score from 0 (agitated) to 1 (calm), and smoothed over time so the environment changes gradually. |
+| **Breathing-reactive weather** | A low score brings many dark, large, low clouds circling quickly (wind). A high score makes them lighter, smaller and farther away, leaving an almost clear sky. |
+| **Time of day** | Dawn, Afternoon, Sunset or Night, each with its own sky, lighting and mood. Can be chosen before the session and changed inside the forest. |
+| **Audio** | A music playlist with crossfades, plus an ambient soundscape (day or night forest, and water that gets louder near the lake). Music and ambient volume are set independently and remembered between launches. |
+| **Safe play area** | The player cannot leave the generated area or walk into the lake (except onto the dock). |
+
+### App flow
+
+The app has two scenes: **MenuScene** (menus) and **procWorld** (the forest).
+
+```mermaid
+flowchart LR
+    subgraph MenuScene
+        A[Main menu] -->|About us| B[About]
+        B -->|Go Back| A
+        A -->|Start| C[Setup<br/>time of day · music · ambient]
+        C -->|Go Back| A
+        A -->|Exit| X((Quit))
+    end
+    subgraph procWorld
+        D[Exploration] -->|B button| E[Breathing exercise<br/>+ weather feedback]
+        E -->|B button| D
+        D -->|Y button| F[Options<br/>time of day · volumes]
+        F -->|Y button / Close menu| D
+    end
+    C -->|Start Relaxing| D
+    F -->|Return to menu| A
+```
+
+Only one mode is active at a time in the forest: **Exploration**, **Breathing** or **Options**. Opening one menu closes the other. Menus appear in front of the user's head and fade in and out.
+
+### Controls (Meta Quest controllers)
+
+| Action | Input |
+|---|---|
+| Point at and press UI buttons / sliders | TODO: confirm (ray + trigger?) |
+| Move around the forest | TODO: confirm (thumbstick / teleport / none) |
+| Open / close the breathing exercise | **B** (right controller) |
+| Open / close the options menu | **Y** (left controller) |
+| Breathing input | Rest the TODO: left/right controller on your chest during the exercise |
+
+---
+
+## 4. How to run the application
+
+### Option A: install the APK on a Quest (recommended)
+
+1. Enable **Developer Mode** on the headset (Meta Horizon app → Devices → Headset settings → Developer Mode).
+2. Download `TODO.apk` from TODO: link.
+3. Connect the headset to the computer with a USB-C cable and accept the "Allow USB debugging" prompt inside the headset.
+4. Install it with **Meta Quest Developer Hub** (drag the APK onto the device) or with ADB:
+   ```bash
+   adb install -r TODO.apk
+   ```
+5. In the headset, open **Library → Unknown Sources → CalmWoods**.
+6. The first time the breathing exercise is opened, the app asks for **microphone permission**. Allow it so the microphone fallback can work.
+
+### Option B: build from the Unity project
+
+**Requirements**
+
+- Unity **6000.5.7f1** with the **Android Build Support** module (OpenJDK, Android SDK & NDK Tools)
+- Meta Quest 2 or 3 in Developer Mode, plus a USB-C cable
+
+**Steps**
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/JpSotoSanchez/CalmWoods.git
+   ```
+2. Open the project folder with Unity Hub using Unity 6000.5.7f1. The first import can take several minutes.
+3. Go to **File → Build Profiles**, select **Android** and click **Switch Platform** if it is not already active.
+4. Check that the **Scene List** contains, in this order and enabled:
+   | Index | Scene |
+   |---|---|
+   | 0 | `Assets/Scenes/MenuScene.unity` |
+   | 1 | `Assets/Scenes/procWorld.unity` |
+5. Connect the Quest, choose it under **Run Device**, and click **Build And Run**.
+
+### Recommended session setup
+
+- Sit on a chair without wheels in a quiet room.
+- During the breathing exercise, rest the controller flat on your chest and keep it still; if it moves too much, tracking restarts.
+- Keep quiet while the microphone is in use, since speaking interferes with the signal.
+
+---
+
+## 5. Repository structure
+
+```
+Assets/
+├── Scenes/
+│   ├── MenuScene.unity          # Main menu, about and session setup
+│   └── procWorld.unity          # Procedural forest + breathing experience
+└── CalmWoods/
+    ├── Scripts/
+    │   ├── WorldGenerator.cs              # Rule-based procedural forest (terrain, lake, dock, trees, details)
+    │   ├── LowPolyMeshBuilder.cs          # Low-poly mesh helpers for the generator
+    │   ├── GrassInstancedRenderer.cs      # GPU-instanced grass rendering
+    │   ├── PlayerAreaLimiter.cs           # Keeps the player inside the map and out of the lake
+    │   ├── TriggerModeSwitcher.cs         # Exploration / Breathing / Options modes
+    │   ├── VRCanvasController.cs          # Shows world-space menus in front of the user
+    │   ├── ControllerBreathingTracker.cs  # Breathing rate from a controller on the chest
+    │   ├── MicrophoneBreathingTracker.cs  # Breathing rate from the headset microphone
+    │   ├── CalmScoreCalculator.cs         # Rate + regularity → smoothed calm score (0..1)
+    │   ├── WeatherController.cs           # Clouds and wind driven by the calm score
+    │   ├── SceneChanger.cs                # Scene loading helpers for UI buttons
+    │   ├── CalmWoodsInput.inputactions    # B / Y button bindings
+    │   ├── Breathing/                     # BreathingGuide (wheel UI), BreathPattern
+    │   ├── TimeOfDay/                     # Presets, manager, buttons, session settings
+    │   ├── Audio/                         # MusicPlaylist, AmbientSoundscape
+    │   └── UI/                            # MainMenuController
+    ├── TimeOfDay/        # Dawn, Afternoon, Sunset, Night presets
+    ├── Skyboxes/         # One skybox material per time of day
+    ├── Music/            # Music tracks
+    ├── Sounds/           # Forest, night forest and river ambience
+    └── UI/Sprites/       # Breathing wheel sprites
+Documentation/
+```
+
+## 6. Documentation
+
+| File | Contents |
+|---|---|
+| [`DesignJustification.md`](Documentation/DesignJustification.md) | Design decisions and the HCI concepts behind them |
+| [`UserResearch.md`](Documentation/UserResearch.md) | Participants, method, findings, customer journey |
+| [`UserTesting.md`](Documentation/UserTesting.md) | Test plan, tasks, results and improvements |
+| [`AIUsage.md`](Documentation/AIUsage.md) | AI tools used, what for, and how output was checked |
+
+## 7. Credits
+
+- **Team:** Kenzo Matoo López, Jaime Rincón Burboa, José Pablo Soto Sánchez
+- **Instructors:** Dr. Jafet Rodríguez, Ing. Renata Aparicio
+- Unity **VR Template** (XR Origin setup) and **XR Interaction Toolkit**
+- **BOXOPHOBIC**: Skybox Cubemap Extended
+- Music and ambient sounds: TODO: sources and licenses

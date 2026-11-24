@@ -8,9 +8,9 @@
 | **Platform** | Meta Quest 2 / Meta Quest 3 (standalone, Android). Tested on Meta Quest 2 |
 | **Engine** | Unity 6000.5.7f1 · URP · OpenXR · XR Interaction Toolkit 3.5 |
 | **Team** | Kenzo Matoo López · Jaime Rincón Burboa · José Pablo Soto Sánchez |
-| **Figma prototype** | [Calm Woods on Figma](https://www.figma.com/design/DdMvp6iQemLbSBfrabTIqd/Calm-Woods?node-id=0-1&t=2EiklJRAcfd5nseF-1) |
+| **Figma prototype** | [Calm Woods on Figma](https://www.figma.com/design/DdMvp6iQemLbSBfrabTIqd/Calm-Woods?node-id=0-1&t=FtsM47eN8HwwMw0q-1) |
 | **Executable (APK)** | [Download from Google Drive](https://drive.google.com/file/d/1oTDwP7lXJs1zZj0BuBfaVNGGD5zLVffb/view?usp=sharing) |
-| **Commercial** | Coming soon |
+| **Commercial** | [Watch on Google Drive](https://drive.google.com/file/d/1KRVHU94-jauoJej9DZbosi9q2A0Q95-8/view?usp=sharing) |
 
 > Calm Woods is a relaxation aid. It is **not a medical treatment**.
 

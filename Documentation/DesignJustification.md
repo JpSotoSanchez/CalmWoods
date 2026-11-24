@@ -70,7 +70,8 @@ VR has risks that a phone does not, so the choice comes with obligations:
 
 Stress (Q1) went down in every app session for P1 and P2 and stayed the same in both of P3's runs (mean 5.0 → 4.0), and heart rate dropped in all 5 sessions (mean 97.0 → 80.2 bpm). For P1, the app lowered every measure more than sitting quietly for 5 minutes. P1's favorite part was "the comfy place" and P3's was "seeing the forest itself". The interviews support the reasoning above: the participants relax with music, a series or a walk, and earlier tools had not worked for P1 (guided breathing) and P3 (other apps). P3 came in with reservations and said afterwards that maybe an app is not what works best for them, so VR is not the right tool for everyone (`UserResearch.md`, K7 and K10).
 
-> 📷 **Screenshot:** `Images/dj_vr_overview.png` — the user's view inside the forest (TODO: capture in headset).
+![The user's view inside the forest: the clearing, the lake and the ring of mountains](Images/dj_vr_overview.png)
+*The user's view inside the forest: the clearing, the lake and the ring of mountains.*
 
 ---
 
@@ -103,13 +104,17 @@ Low-poly assets keep the app light, and the generator (`WorldGenerator`, used in
 
 > The repository also contains `TerrainWorldGenerator` and `GrassInstancedRenderer` (Unity Terrain with GPU-instanced grass), but they are **not used** in the tested scenes.
 
-> 📷 **Screenshot:** `Images/dj_lowpoly_trees.png` — close-up of trees, rocks and grass (TODO).
-> 📷 **Screenshot:** `Images/dj_lowpoly_lake.png` — lake and dock (TODO).
-> TODO: add the frame rate measured on Quest 2 / Quest 3 (OVR Metrics Tool or the Unity profiler).
+![Close-up of low-poly trees and rocks](Images/dj_lowpoly_trees.png)
+*Low-poly trees and rocks: simple shapes and flat colors from one shared palette.*
+
+![The lake and the dock](Images/dj_lowpoly_lake.png)
+*The lake and the dock, seen in the Unity editor.*
+
+**Frame rate:** about 70 FPS on Meta Quest 2, close to the headset's 72 Hz refresh rate. This is an approximate value observed by the team, not a log from a profiling tool.
 
 ### What testing showed
 
-No session was stopped for discomfort and the mean dizziness / eye-strain score was 2.0 of 5 (C5 = 3, 2, 1). P1 felt mild dizziness at the end, while the clouds were moving, with a headset that may not have been fitted well; P2's blurry vision came from the lens spacing. P1 and P3 named the place itself as the most pleasant part. The frame rate was not measured.
+No session was stopped for discomfort and the mean dizziness / eye-strain score was 2.0 of 5 (C5 = 3, 2, 1). P1 felt mild dizziness at the end, while the clouds were moving, with a headset that may not have been fitted well; P2's blurry vision came from the lens spacing. P1 and P3 named the place itself as the most pleasant part. The frame rate stays at about 70 FPS on Quest 2.
 
 ---
 
@@ -147,7 +152,14 @@ Our persona needs **zero learning curve** and is skeptical; a cluttered or flash
 
 Everyone completed the setup (checkpoints 1.1–1.4) and the menus were rated 4.3 of 5 (C4). P3 chose a time of day in 10 s. P2, with very little VR experience, took about 20 s to get used to pointing and selecting and was faster in the second run. One problem goes against **error prevention**: P1 pressed the B and Y buttons twice by accident because they pressed too fast (`UserTesting.md`, F2).
 
-> 📷 **Screenshots (TODO):** `Images/dj_main_menu.png` · `Images/dj_setup.png` · `Images/dj_options.png`
+![Main menu](Images/dj_main_menu.png)
+*Main menu: three options, with the main action (Start) in amber.*
+
+![Setup screen](Images/dj_setup.png)
+*Setup screen: four time-of-day buttons and two sliders, with Afternoon and 70% volume preselected.*
+
+![Options menu inside the forest](Images/dj_options.png)
+*Options menu inside the forest (Y), captured in the headset: the same theme as the setup screen.*
 
 ---
 
@@ -173,11 +185,12 @@ If the user could only stand still in one spot, the forest would feel like a bac
 
 ### Trade-off: exploration and motion sickness
 
-Moving with a joystick while seated is a known cause of motion sickness. We accept this risk because exploration adds immersion, and we limit it with the seated setup, a stable frame rate (D2) and optional movement. TODO: confirm the turn type (snap or smooth) and movement speed. Testing did not show a need for a comfort vignette: no session was stopped and the mean C5 was 2.0.
+Moving with a joystick while seated is a known cause of motion sickness. We accept this risk because exploration adds immersion, and we limit it with the seated setup, a stable frame rate (D2) and optional movement. The locomotion uses the comfort settings of the XR Interaction Toolkit rig: the user walks at 2.5 m/s with the left joystick, and turns with the right joystick in **snap turns** of 45° (with 0.5 s between turns, and a 180° turn when pulling the joystick back) instead of a smooth rotation, because a continuous rotation that the inner ear does not feel is one of the strongest causes of cybersickness. There is no comfort vignette: testing did not show a need for one, since no session was stopped and the mean C5 was 2.0.
 
 The customer journey also predicts a friction here: the user might be stopped at the edge of the map or the lake without knowing why. The mountains and the shoreline make these limits visible as part of the landscape. No participant reported this problem, but the observation log did not record how participants walked, so this friction is still unchecked.
 
-> 📷 **Screenshot:** `Images/dj_lake.png` — the lake and the dock seen from the clearing (TODO).
+![The lake and the dock seen from the clearing](Images/dj_lake.png)
+*The lake and the dock seen from the clearing at Sunset: a landmark to walk to, framed by the mountains.*
 
 ---
 
@@ -215,7 +228,8 @@ The **2 seconds of "GET READY"** give the user time to place the controller on t
 
 All three participants rated the guide 5 of 5 (C1), and P1 and P3 followed it unaided. The exception shows a limit of **redundant coding**: P2 could not follow the guide in the first run because the labels were in English, so the color, the circle and the marker were not enough on their own without understanding the words (`UserResearch.md`, K4; `UserTesting.md`, F5).
 
-> 📷 **Screenshot:** `Images/dj_breathing_wheel.png` — the wheel during an inhale (TODO).
+![The breathing wheel during an exhale](Images/dj_breathing_wheel.png)
+*The breathing wheel during an exhale, captured in the headset: the cyan arc is active, the marker shows the position in the cycle and the countdown shows 3 s left.*
 
 ---
 
@@ -250,7 +264,11 @@ Weather fits the **forest theme**: a storm that clears is something everyone und
 
 This is the decision testing questioned most. The metaphor was **not** self-explanatory: P1 rated their understanding 2 of 5, said "I didn't understand the clouds" and noticed the weather reacting only in the last seconds of T2; P3 rated it 3 of 5 and "at first thought it was random". Goal G4 (mean C2 ≥ 4) was not met. Both asked for some indication of what the weather means. The tutorial mentions the weather only in its last step ("watch the sky clear up"), and P1 skipped the instructions. After P1, we adjusted the weather so it starts stormy or at a medium level and clears further, and compared both with P3: P3 still understood it late and neither setting was clearly better. The problem was the **meaning** of the feedback, not how strong or fast it is, so the next step is to explain it (`UserTesting.md`, F1 and F6).
 
-> 📷 **Screenshots (TODO):** `Images/dj_clouds_storm.png` (agitated) · `Images/dj_clouds_clear.png` (calm) — ideally the same view, before and after.
+![Storm clouds while the user is agitated](Images/dj_clouds_storm.png)
+*Agitated breathing: big, dark clouds low and close to the user.*
+
+![Calm sky seen from above](Images/dj_clouds_clear.png)
+*Calm breathing, seen from above in the Unity editor: only a couple of small, white, distant clouds remain.*
 
 ---
 
@@ -307,7 +325,8 @@ People relax in different ways. Some prefer the light of the morning, others the
 
 Sound was one of the strongest results. P2 tried a build without sound and then one with music and ambient sound: with sound, every measure improved more (stress −2 vs. −1, heart rate −30 vs. −16 bpm) and P2 felt "much better" instead of "slightly better". Music was P2's favorite part, and P2 and P3 said the sound was very good. P3's favorite option was the time of day (chose Night in 10 s and set only the ambient sound), which supports **personalization**: different users kept different parts.
 
-> 📷 **Screenshots (TODO):** `Images/dj_time_of_day.png` — the same view at Dawn, Afternoon, Sunset and Night.
+![The same view at Dawn, Afternoon, Sunset and Night](Images/dj_time_of_day.png)
+*The same view at the four times of day.*
 
 ---
 
@@ -333,7 +352,8 @@ Many people in our target audience have little or no VR experience, so the tutor
 
 The tutorial came in `815b5c7`. P1 and P3, whose build had it, opened the breathing menu unaided; P2, whose builds did not, needed a hint. Two limits appeared. P1 skipped the instructions and needed a hint to go back, so **user control** (skipping) also lets users miss what they need. And P3 still used the wrong controller, so reading the instruction once is not always enough (`UserTesting.md`, F1 and F4). The tutorial is only in English (F5).
 
-> 📷 **Screenshot:** `Images/dj_tutorial.png` — the "Walk" step (TODO).
+![The Options step of the tutorial](Images/dj_tutorial.png)
+*The tutorial's Options step (5 / 6), captured in the headset: the progress label, the action to try and the hint to skip.*
 
 ---
 
@@ -344,7 +364,7 @@ Results from the three participants. Codes refer to `UserTesting.md` (results an
 | Decision | What would show it works | Where | Result |
 |---|---|---|---|
 | D1 VR | Lower stress after the session; users say it felt different from their usual tools | Q1–Q3 pre/post, D2, D6 | **Supported.** Mean stress 5.0 → 4.0 and heart rate 97.0 → 80.2 bpm; for P1, more than resting alone. P3 doubts an app is right for them |
-| D2 Low-poly | No dizziness or eye strain; stable frame rate; users describe the scene as calm | C5, observation 1.5, D2 / D3 | **Supported.** C5 mean 2.0, no session stopped; "the comfy place", "seeing the forest". Frame rate not measured |
+| D2 Low-poly | No dizziness or eye strain; stable frame rate; users describe the scene as calm | C5, observation 1.5, D2 / D3 | **Supported.** C5 mean 2.0, no session stopped; "the comfy place", "seeing the forest". About 70 FPS on Quest 2 (approximate) |
 | D3 Menus and typography | Users complete the setup without hints or long hesitations; menus rated easy | Observation 1.1–1.4, C4, hints count | **Supported.** Everyone completed the setup; C4 = 4.3. Double presses by accident (F2) |
 | D4 Exploration | Users explore without getting lost or feeling sick; exploration mentioned as pleasant | T1 observation, C5, D2 / D3 | **Partly checked.** No discomfort from movement reported; walking was not observed in detail |
 | D5 Breathing wheel | Users follow the guide without hints | C1, observation 2.3 | **Supported** (C1 = 5 for all), except for the English labels (F5) |

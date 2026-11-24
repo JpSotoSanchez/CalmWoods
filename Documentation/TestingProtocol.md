@@ -32,14 +32,12 @@ Testing is not a final approval step: it is evidence that must change the app. W
 
 **Target audience:** adults (18+) who feel stress regularly in everyday life, including at least one or two people with no VR experience (same definition as `UserResearch.md`).
 
-**Target number:** the plan allowed 3–5 participants. **Four sessions were run**, each on a newer build of the app. **P1 and P2 are verified and reported.** P3 and P4 are pending: the build they used has not yet been matched to the repository history, so their data is left out until it is confirmed.
-
-**Numbering:** IDs go in reverse order of testing. The highest ID used the oldest build and P1 used the final build (`bd448e3`). P2 was tested before P1.
+**Target number:** the plan allowed 3–5 participants; the **final sample is 3**.
 
 **Inclusion:** 18 or older · belongs to the target audience · gives informed consent.
 **Exclusion:** history of seizures or photosensitive epilepsy · severe motion sickness · a respiratory condition that makes breathing exercises uncomfortable · feels unwell on the test day.
 
-Participants are anonymized (P1–P4). No names are stored. If a participant was also interviewed for `UserResearch.md`, they keep the same ID. Consent was given verbally in every session (Appendix B).
+Participants are anonymized (P1, P2, P3). No names are stored. If a participant was also interviewed for `UserResearch.md`, they keep the same ID. Consent was given verbally in every session (Appendix B).
 
 **Team roles:** in every session one team member, José Pablo Soto Sánchez, acted as facilitator, observer and heart-rate recorder.
 
@@ -52,9 +50,9 @@ Participants are anonymized (P1–P4). No names are stored. If a participant was
 ## 3. Test setup
 
 - **Hardware:** Meta Quest 2 (headset + controllers) and Fitbit Inspire 3 smartwatch, in all sessions.
-- **Breathing input used:** P1: controller on the chest **and** microphone together · P2: controller on the chest (left controller) **and** microphone together · P3, P4: pending verification
+- **Breathing input used:** P1: controller on the chest **and** microphone together · P2: none (the builds tested had no working breathing input; the left controller was placed on the chest but did not drive anything) · P3: controller on the chest **and** microphone together
 - **Position:** seated, comfortable posture, controller/hand resting on the chest for T2.
-- **Build tested:** P1: `bd448e3` · P2: a build between `815b5c7` and `40db2f4` (tutorial, breathing guide and breathing tracking; no reactive weather) · P3, P4: pending verification
+- **Commit tested:** P1: `bd448e3` · P2: `36e5a79` (run 1, no sound) and `0b34998` (run 2, with music and ambient sound) · P3: `bd448e3`, with the weather parameters adjusted in Unity before each run (not committed; values not recorded)
 
 ---
 
@@ -66,8 +64,6 @@ The two tasks follow the real main flow: **Main menu → Setup → Forest → Br
 |---|---|---|---|
 | **T1 – Free exploration** | 3 min | "Explore the app however you like. Get to know it." *(Think-aloud allowed.)* | Starts the session from the main menu, chooses a time of day, adjusts at least one volume slider and enters the forest, all without a hint |
 | **T2 – Calm your breathing** | 2 min | "Now dedicate yourself exclusively to calming your breathing. Please stay silent." | Opens the breathing menu, places the controller on the chest, follows the inhale / hold / exhale guide for the full 2 minutes |
-
-Because each participant used a newer build, a checkpoint or survey item about a feature that was not in that build yet is recorded as **N/A**, not as a failure.
 
 ---
 
@@ -81,7 +77,7 @@ Because each participant used a newer build, a checkpoint or survey item about a
 | 4 | 1 min | Put on smartwatch; sit still and quiet to record **baseline HR** | HR sheet |
 | 5 | 1 min | Put on headset, adjust fit, place controllers. Short explanation of controls only | – |
 | 6 | 3 min | **T1 – Free exploration** | Observation log, HR every 30 s |
-| 7 | 2 min | **T2 – Calm your breathing** (breathing menu + weather feedback active, when the build has them) | Observation log, HR every 30 s |
+| 7 | 2 min | **T2 – Calm your breathing** (breathing menu + weather feedback active) | Observation log, HR every 30 s |
 | 8 | 1 min | Remove headset; sit still to record **post HR** | HR sheet |
 | 9 | 3 min | **Post-session survey** | Section 6.2 |
 | 10 | 3 min | Short interview: "What did you think the weather was telling you?", "What would you change?" | Quotes |
@@ -98,13 +94,18 @@ Because each participant used a newer build, a checkpoint or survey item about a
 
 ### Deviations from the plan (actual sessions)
 
-- Four sessions were run (planned 3–5); two are reported so far (P1, P2) and two are pending verification (P3, P4).
-- Each participant used a **different build**, because the app kept changing between sessions. This makes the sessions an iteration record, but it also means results are not fully comparable across participants.
-- **Build and date of P2:** the session notes did not record the commit and had a wrong date. The build was identified from the repository history: it had the tutorial (`815b5c7`) and breathing tracking, but not the reactive weather (`04dc20f`), so it was built from a commit between `815b5c7` and `40db2f4`. The session took place on 22/11/2026, before P1. The exact commit was not recorded.
+- The final sample is 3 participants (planned 3–5).
 - Consent was given **verbally**; no signed form was collected.
-- **Control condition:** P1 first sat quietly for 5 minutes without the app, and used the app 2 hours later. P2 used the app first and did the control 2 hours later. Across P1 and P2 the order is therefore balanced. P3, P4: pending verification.
-- **P1 was not asked items C6, D5 and D6** of Survey 2, so G6 and G7 have no data for P1.
-- The app has **no session summary screen** (planned in the project proposal, Section 4.3), so there is no app-reported breathing rate or time in calm state. P2's build showed a live on-screen sensor label during T2; it was removed in `bd448e3`, and its values were not recorded.
+- **Control condition:** P1 first sat quietly for 5 minutes without the app, and used the app 2 hours later. The order was not counterbalanced for P1. P2: **no control**. P2 did the full app session twice, with two builds one hour apart: run 1 without sound (`36e5a79`), then run 2 with music and ambient sound (`0b34998`), to see which version the user prefers. The order was not counterbalanced. · P3: **no control**. P3 did the full app session twice on `bd448e3`, two hours apart, with two weather settings: run 1 with the weather starting stormy and able to clear to very calm, then run 2 with the weather starting at a medium level and able to clear to much calmer. The order was not counterbalanced.
+- P3's weather parameters were changed in the Unity Inspector before each run. The changes were not committed and the exact values were not recorded.
+- P3 drank coffee about 2 hours before run 1 (no caffeine or exercise before run 2).
+- P3 answered Survey 1 and Survey 2 Parts A and B before and after each run, and Parts C and D once, after both runs.
+- P1 answered the earlier version of Survey 2 (items C1–C5 and open questions D1–D4), so **C6, D5 and D6 were not collected for P1** and G6 and G7 have no data for P1.
+- **P2 tested earlier builds than P1.** In both P2 builds the weather did not react to breathing yet (the responsive climate came in `04dc20f`), so checkpoint 2.4 and items C2, C3 and D1 do not apply to P2, and G4 has no data from P2.
+- P2 answered Survey 1 and Survey 2 Parts A and B before and after **each** run, and Parts C and D **once**, after both runs.
+- The breathing guide was shown in English. P2 did not follow it in run 1, and the facilitator explained each step before run 2.
+- P2's headset lens spacing was set wrong at first (slightly blurry vision). It was corrected before the test continued.
+- The app has **no session summary screen** (planned in the project proposal, Section 4.3), so there is no app-reported breathing rate or time in calm state.
 
 ---
 
@@ -179,9 +180,9 @@ Caffeine or intense exercise in the last 2 hours: ☐ No ☐ Yes
 
 **Participant:** P__ · **Observer:** ______ · **Commit:** `_______` · **Input:** ☐ chest controller ☐ microphone ☐ both
 
-**Legend:** ✔ = done unaided · ◐ = done with a hint · ✘ = failed / gave up · N/A = not in that build. **Error** = wrong action or hesitation > 5 s.
+**Legend:** ✔ = done unaided · ◐ = done with a hint · ✘ = failed / gave up. **Error** = wrong action or hesitation > 5 s.
 
-| # | Checkpoint | Result (✔ / ◐ / ✘ / N/A) | Time (s) | Errors / hesitations | Notes and exact quotes |
+| # | Checkpoint | Result (✔ / ◐ / ✘) | Time (s) | Errors / hesitations | Notes and exact quotes |
 |---|---|---|---|---|---|
 | **T1** | **Free exploration (3 min)** | | | | |
 | 1.1 | Presses Start on the main menu | | | | |
@@ -211,7 +212,7 @@ The project proposal mentions a "short validated anxiety questionnaire" and the 
 - **Anxiety:** the recommendation is the **STAI-6 (short state-anxiety form)**, because it measures how a person feels right now, which fits a before/after comparison of a single session. The popular GAD-7 asks about the past two weeks, so it would not change after 5 minutes.
 - **Usability:** the **SUS (10 items)**, answered once in Survey 2.
 
-**Decision:** ☐ STAI-6 ☐ SUS ☐ Neither (reason: ____________) · P1 and P2 did not answer either questionnaire.
+**Decision:** ☐ STAI-6 ☐ SUS ☒ Neither (reason: there was no time for them in P2's sessions, and P3 was not interested in answering them) · No participant answered either questionnaire.
 
 ---
 
@@ -222,7 +223,21 @@ A change in stress or heart rate could happen simply from sitting still, so the 
 - **Condition A:** Calm Woods session (T1 + T2, 5 minutes).
 - **Condition B (control):** sit quietly for 5 minutes with the watch, no app. Same Survey 1 before and Survey 2 (Parts A and B) after, and the same heart-rate readings.
 
-**Order:** P1 B → A (control first, the app 2 hours later) · P2 A → B (the app first, control 2 hours later) · P3, P4: pending verification
+**Order:** P1 B → A (control first, the app 2 hours later; not counterbalanced) · P2 A1 → A2, no B (see below) · P3 A1 → A2, no B (see below)
+
+**P2: sound off vs. sound on.** P2 did not do the control. P2 did Condition A twice with two builds, one hour apart:
+
+- **A1:** build without sound (`36e5a79`).
+- **A2:** build with music and ambient sound (`0b34998`), the commit right after A1.
+
+Everything else was the same (T1 + T2, Survey 1 and Survey 2 Parts A and B around each run, the same heart-rate readings). Parts C and D were asked once, after A2. The order was fixed (A1 first), so learning from run 1 cannot be separated from the effect of the sound.
+
+**P3: weather starting stormy vs. starting medium.** P3 did not do the control. P3 did Condition A twice on `bd448e3`, two hours apart, with the weather parameters adjusted in Unity before each run:
+
+- **A1:** the weather starts stormy and can clear to very calm.
+- **A2:** the weather starts at a medium level and can clear to much calmer.
+
+Everything else was the same as for P2. Parts C and D were asked once, after A2. The order was fixed (A1 first), and P3 had coffee about 2 hours before A1.
 
 The comparison results are in `UserTesting.md`, Section 4.4.
 
@@ -230,58 +245,62 @@ The comparison results are in `UserTesting.md`, Section 4.4.
 
 ## 8. Raw data
 
-> Real data only. A blank cell means not recorded or not yet collected. P3 and P4 are left blank until the build they used is verified.
+> Real data only. A blank cell means not recorded or not yet collected.
 
 ### 8.1 Survey responses
 
-Control = 5 minutes seated without the app (only Survey 1, Survey 2 Part A and Part B were asked). "n/a" = not asked in that condition. "not asked" = the item was not asked to that participant. "N/A (build)" = the feature was not in that participant's build. P2 answered in Spanish; quotes are translated.
+Control = 5 minutes seated without the app (only Survey 1, Survey 2 Part A and Part B were asked). "n/a" = not asked in that condition, or does not apply to the build tested. "not asked" = the participant answered the earlier version of the survey. P2 and P3 have no control: their two columns are two app runs. P2: run 1 = build without sound `36e5a79`, run 2 = build with sound `0b34998`, one hour later. P3: both runs on `bd448e3`, run 1 = weather starts stormy, run 2 = weather starts at a medium level, two hours later. P2 and P3 answered Parts C and D once, after both runs, so those answers are in the run 2 column and run 1 shows "–". P2's and P3's open answers are in the original Spanish.
 
-| Item | P1 app | P1 control | P2 app | P2 control | P3 app | P3 control | P4 app | P4 control |
-|---|---|---|---|---|---|---|---|---|
-| Age · VR experience | 19 · a little | same | 25 · never | same | | | | |
-| Caffeine or exercise in last 2 h | No | – | No | – | | | | |
-| Survey 1 Q1 / Q2 / Q3 | 7 / 5 / 6 | 7 / 5 / 6 | 7 / 7 / 6 | 7 / 6 / 6 | | | | |
-| Survey 2 Q1 / Q2 / Q3 | 5 / 4 / 4 | 6 / 6 / 6 | 4 / 4 / 4 | 6 / 6 / 5 | | | | |
-| Part B overall change | Slightly better | The same | Much better | Slightly better | | | | |
-| C1 guide | 5 | n/a | 5 | n/a | | | | |
-| C2 understood weather | 2 | n/a | N/A (build) | n/a | | | | |
-| C3 weather helped | 4 | n/a | N/A (build) | n/a | | | | |
-| C4 menus | 5 | n/a | 5 | n/a | | | | |
-| C5 dizziness / eye strain | 3 | n/a | 1 | n/a | | | | |
-| C6 controller on chest | not asked | n/a | 4 | n/a | | | | |
-| D1 weather telling you | "At the end, I understood that the weather was responsive" | n/a | N/A (build) | n/a | | | | |
-| D2 most helpful or pleasant | "The comfy place" | n/a | "The sunrise atmosphere, and feeling that the guided breathing really did slow me down" | n/a | | | | |
-| D3 confusing or uncomfortable | "I didn't understand the clouds" | n/a | "I liked putting the controller on my chest, but I didn't see any change in the forest that confirmed whether I was doing it right" | n/a | | | | |
-| D4 what to change | "Maybe instructions for the weather" | n/a | "Some change in the environment or the sky to see my progress without having to read numbers" | n/a | | | | |
-| D5 favorite option | not asked | n/a | "The relaxing music and the sunrise" | n/a | | | | |
-| D6 use it again | not asked | n/a | "Yes, definitely after finishing work, about 5 to 10 minutes" | n/a | | | | |
+| Item | P1 app | P1 control | P2 run 1 (no sound) | P2 run 2 (with sound) | P3 run 1 (weather starts stormy) | P3 run 2 (weather starts medium) |
+|---|---|---|---|---|---|---|
+| Age · VR experience | 19 · a little | same | 48 · very little (had tried a headset once or twice) | same | 59 · some (has used VR before and adapts easily) | same |
+| Caffeine or exercise in last 2 h | No | – | No | No | Yes (coffee about 2 h before) | No |
+| Survey 1 Q1 / Q2 / Q3 | 7 / 5 / 6 | 7 / 5 / 6 | 4 / 4 / 2 | 5 / 5 / 6 | 5 / 7 / 8 | 4 / 6 / 3 |
+| Survey 2 Q1 / Q2 / Q3 | 5 / 4 / 4 | 6 / 6 / 6 | 3 / 3 / 2 | 3 / 2 / 2 | 5 / 6 / 6 | 4 / 5 / 3 |
+| Part B overall change | Slightly better | The same | Slightly better | Much better | The same | Slightly better |
+| C1 guide | 5 | n/a | – | 5 | – | 5 |
+| C2 understood weather | 2 | n/a | – | n/a (no responsive weather) | – | 3 |
+| C3 weather helped | 4 | n/a | – | n/a (no responsive weather) | – | 3 |
+| C4 menus | 5 | n/a | – | 4 | – | 4 |
+| C5 dizziness / eye strain | 3 | n/a | – | 2 | – | 1 |
+| C6 controller on chest | not asked | n/a | – | 4 | – | 5 |
+| D1 weather telling you | "At the end, I understood that the weather was responsive" | n/a | – | n/a (no responsive weather) | – | "Después de un rato vi que era según cómo me sentía o respiraba, aunque al principio pensé que era aleatorio" |
+| D2 most helpful or pleasant | "The comfy place" | n/a | – | "La parte de la música me ayudó mucho y es una mejora" | – | "El ver el bosque como tal" |
+| D3 confusing or uncomfortable | "I didn't understand the clouds" | n/a | – | "Todavía no sé si de alguna manera estaba haciendo bien el respirar y eso no me daba la mejor sensación del mundo, pero la UI es útil como guía, y los lentes son pesados y algo incómodos" | – | "No entendí el clima al inicio" |
+| D4 what to change | "Maybe instructions for the weather" | n/a | – | "Algo para medir la respiración" | – | "Puede que alguna indicación del clima estuviera bien, además de las nubes" |
+| D5 favorite option | not asked | n/a | – | "Música, pero la parte de cambiar el horario también me gustó" | – | "Me gustó la opción del día" |
+| D6 use it again | not asked | n/a | – | "Sí, por un rato, si tengo unos 5 o 10 min para irme a ese lugar tranquilo" | – | "Sí, está interesante y se sintió segura la app, aunque el clima creo que no me ayudó mucho" |
 
 Additional comment from P1 (app): "a little dizziness at the end of the session"; afterwards the image looked a little blurry and the headset may not have been fitted as well as possible.
 
+Additional comments from P2: C5 = 2 because of slightly blurry vision, caused by the lens spacing being set wrong; it was corrected before the test continued. During the session P2 said the sound was very good.
+
+Additional comments from P3: said the sound is very good. After the session P3 commented that maybe an app is not what works best for them.
+
 ### 8.2 Heart-rate sheet
 
-| Moment | P1 | P2 | P3 | P4 |
-|---|---|---|---|---|
-| Baseline (seated, before VR) | 95 | 80 | | |
-| 0:30 (T1) | 89 | 81 | | |
-| 1:00 (T1) | 92 | 79 | | |
-| 1:30 (T1) | 91 | 78 | | |
-| 2:00 (T1) | 90 | 76 | | |
-| 2:30 (T1) | 89 | 75 | | |
-| 3:00 (T1 ends) | 85 | 74 | | |
-| 3:30 (T2) | 83 | 72 | | |
-| 4:00 (T2) | 80 | 70 | | |
-| 4:30 (T2) | 79 | 69 | | |
-| 5:00 (T2 ends) | 78 | 68 | | |
-| Post (1 min after removing headset) | 79 | 69 | | |
-| **Mean T1** (0:30–3:00) | 89.3 | 77.2 | | |
-| **Mean T2** (3:30–5:00) | 80.0 | 69.8 | | |
-| **Δ** T2 mean − baseline | −15.0 | −10.3 | | |
-| **Δ** 5:00 − baseline | −17 | −12 | | |
-| **Δ** post − baseline | −16 | −11 | | |
-| **Control:** baseline | 95 | 78 | | |
-| **Control:** end (5 min) | 85 | 74 | | |
-| **Control:** Δ end − baseline | −10 | −4 | | |
+| Moment | P1 | P2 run 1 (no sound) | P2 run 2 (with sound) | P3 run 1 (weather starts stormy) | P3 run 2 (weather starts medium) |
+|---|---|---|---|---|---|
+| Baseline (seated, before VR) | 95 | 94 | 102 | 104 | 90 |
+| 0:30 (T1) | 89 | 92 | 102 | 100 | 90 |
+| 1:00 (T1) | 92 | 93 | 102 | 99 | 90 |
+| 1:30 (T1) | 91 | 93 | 94 | 100 | 90 |
+| 2:00 (T1) | 90 | 92 | 90 | 94 | 90 |
+| 2:30 (T1) | 89 | 90 | 85 | 93 | 90 |
+| 3:00 (T1 ends) | 85 | 86 | 83 | 92 | 89 |
+| 3:30 (T2) | 83 | 84 | 80 | 89 | 90 |
+| 4:00 (T2) | 80 | 81 | 76 | 87 | 88 |
+| 4:30 (T2) | 79 | 79 | 72 | 88 | 87 |
+| 5:00 (T2 ends) | 78 | 78 | 72 | 87 | 86 |
+| Post (1 min after removing headset) | 79 | 76 | 73 | 86 | 85 |
+| **Mean T1** (0:30–3:00) | 89.3 | 91.0 | 92.7 | 96.3 | 89.8 |
+| **Mean T2** (3:30–5:00) | 80.0 | 80.5 | 75.0 | 87.8 | 87.8 |
+| **Δ** T2 mean − baseline | −15.0 | −13.5 | −27.0 | −16.3 | −2.3 |
+| **Δ** 5:00 − baseline | −17 | −16 | −30 | −17 | −4 |
+| **Δ** post − baseline | −16 | −18 | −29 | −18 | −5 |
+| **Control:** baseline | 95 | not run | not run | not run | not run |
+| **Control:** end (5 min) | 85 | not run | not run | not run | not run |
+| **Control:** Δ end − baseline | −10 | not run | not run | not run | not run |
 
 ### 8.3 Completed observation logs
 
@@ -315,45 +334,79 @@ Additional comment from P1 (app): "a little dizziness at the end of the session"
 
 #### P2
 
-**Participant:** P2 · **Observer:** José Pablo Soto Sánchez · **Commit:** build between `815b5c7` and `40db2f4` (exact commit not recorded) · **Input:** controller on the chest (left) and microphone together · **Date:** 22/11/2026, before P1
+**Participant:** P2 · **Observer:** José Pablo Soto Sánchez · **Commit:** `36e5a79` (run 1, no sound) · `0b34998` (run 2, with sound) · **Input:** none (no working breathing input in these builds) · **Date:** 23/11/2026
+
+Results and times are for run 1. Times are seconds from the start of T1 or T2. Notes about run 2 are marked.
 
 | # | Checkpoint | Result | Time (s) | Errors / hesitations | Notes |
 |---|---|---|---|---|---|
 | **T1** | **Free exploration (3 min)** | | | | |
-| 1.1 | Presses Start on the main menu | ✔ | ≈9 | | |
-| 1.2 | Chooses a time of day | ✔ | ≈7 | | Chose Dawn |
-| 1.3 | Adjusts music and/or ambient volume | ✔ | ≈8 | | Left music at 70 %, raised ambient a little |
-| 1.4 | Presses Start and enters the forest | ✔ | ≈6 | | |
-| 1.5 | Looks around comfortably | ✔ | – | | Preferred to stay seated looking around; walked only a little along the path |
+| 1.1 | Presses Start on the main menu | ✔ | 5 | | Said they liked it |
+| 1.2 | Chooses a time of day | ✔ | 20 | | Took a while to get used to pointing and selecting |
+| 1.3 | Adjusts music and/or ambient volume | ✔ | 25 | | Run 2: said they liked the sound |
+| 1.4 | Presses Start and enters the forest | ✔ | 35 | | Did it better in run 2 |
+| 1.5 | Looks around comfortably | ✔ | 50 | | Took a while to get used to the headset |
 | **T2** | **Calm your breathing (2 min)** | | | | |
-| 2.1 | Finds and opens the breathing menu | ✔ | ≈7 | | Remembered it from the tutorial |
-| 2.2 | Places the controller on the chest correctly | ◐ | ≈11 | Unsure whether the right or left controller | Hint: it is the left controller. Placed it during "GET READY" |
-| 2.3 | Follows the inhale / hold / exhale guide | ✔ | ≈6 | | Very steady for the 2 minutes |
-| 2.4 | Notices the weather reacting | N/A | – | | No reactive weather in this build |
-| 2.5 | Stays silent and still during the 2 minutes | ✔ | – | | |
+| 2.1 | Finds and opens the breathing menu | ◐ | 27 | | Hint: how to open the menu |
+| 2.2 | Places the controller on the chest correctly | ◐ | 36 | | Hint: it is the left controller (chest input not responsive in this build) |
+| 2.3 | Follows the inhale / hold / exhale guide | ✘ | 45 | Did not follow the guide in run 1 | The guide was in English; each step was explained before run 2 |
+| 2.4 | Notices the weather reacting | n/a | – | | No responsive weather in this build |
+| 2.5 | Stays silent and still during the 2 minutes | ✔ | rest of T2 | | Silent except for asking whether they were doing it right |
 
-**Totals:** hints given: 1 · errors: 1 · tracking lost / crash: No
+**Totals:** done unaided: 6 · with a hint: 2 · failed: 1 · n/a: 1 · hints given: 2 (plus the explanation of the guide between runs) · errors: 1 · tracking lost / crash: No
 **Errors (1):**
-1. At the start of T2, moved the chest controller to get comfortable, which restarted the tracking; settled quickly.
+1. Did not follow the inhale / hold / exhale guide in run 1, because it was shown in English.
 
-**Spontaneous comments:** after T2: "Did it detect it properly? I didn't see if anything changed."
-**App session summary:** not available. A live sensor label was visible during T2; its values were not recorded.
-**Emotional reactions / body language observed:** looked very comfortable from the start; no dizziness.
+**Spontaneous comments:** the sound is very good (no other important comments recorded).
+**App session summary:** not available (the app has no session summary).
+**Emotional reactions / body language observed:** P2 looked relaxed by the end of the session.
+
+#### P3
+
+**Participant:** P3 · **Observer:** José Pablo Soto Sánchez · **Commit:** `bd448e3`, weather parameters adjusted before each run (run 1: starts stormy · run 2: starts at a medium level) · **Input:** controller on the chest and microphone together · **Date:** 23/11/2026
+
+Results and times are for run 1. Times are seconds from the start of T1 or T2.
+
+| # | Checkpoint | Result | Time (s) | Errors / hesitations | Notes |
+|---|---|---|---|---|---|
+| **T1** | **Free exploration (3 min)** | | | | |
+| 1.1 | Presses Start on the main menu | ✔ | 3 | | Knew how to move around |
+| 1.2 | Chooses a time of day | ✔ | 10 | | Chose Night quickly and moved on |
+| 1.3 | Adjusts music and/or ambient volume | ✔ | 15 | | Ambient sound at medium; did not turn music on |
+| 1.4 | Presses Start and enters the forest | ✔ | 20 | | |
+| 1.5 | Looks around comfortably | ✔ | 30 | | Used the headset easily |
+| **T2** | **Calm your breathing (2 min)** | | | | |
+| 2.1 | Finds and opens the breathing menu | ✔ | 10 | | No comments |
+| 2.2 | Places the controller on the chest correctly | ✘ | 15 | Used the right controller first | No hint recorded |
+| 2.3 | Follows the inhale / hold / exhale guide | ✔ | 25 | | Followed it correctly |
+| 2.4 | Notices the weather reacting | ✔ | 50 | | |
+| 2.5 | Stays silent and still during the 2 minutes | ✔ | rest of T2 | | No comments |
+
+**Totals:** done unaided: 9 · with a hint: 0 · failed: 1 · n/a: 0 · hints given: 0 · errors: 1 · tracking lost / crash: No
+**Errors (1):**
+1. Placed the right controller on the chest first, instead of the left one.
+
+**Spontaneous comments:** the sound is very good (no other important comments recorded).
+**App session summary:** not available (the app has no session summary).
+**Emotional reactions / body language observed:** P3 did not relax much, and commented that maybe an app is not what works best for them.
 
 ---
 
 ## 9. Limitations
 
-- Small sample: 2 reported participants so far (4 sessions run). Results show **trends and usability problems**, not statistical or clinical effectiveness.
-- Each participant used a different build, so differences between participants mix the effect of the person with the effect of the version.
-- The exact build commit of P2 was not recorded at the time; it was reconstructed from the repository history as a range of commits.
+- Small sample (3 people): results show **trends and usability problems**, not statistical or clinical effectiveness.
 - One team member was facilitator, observer and heart-rate recorder in every session, so observations come from a single rater and may be biased.
-- The control order was balanced across P1 (control first) and P2 (app first), but with one participant per order, order effects cannot be separated from the effect of the app.
-- P1 was not asked C6, D5 and D6, so those items have no data for P1.
+- The control condition was not counterbalanced for P1 (control first, app 2 hours later), so order effects cannot be separated from the effect of the app.
+- P1 answered an earlier version of Survey 2 (without C6, D5 and D6), so those items have no data for P1.
+- P2 did not do the control. P2 compared a build without sound and a build with sound in a fixed order (no sound first, one hour apart), so learning from run 1 cannot be separated from the effect of the sound. P2 also started run 2 more stressed and with a higher heart rate than run 1.
+- P2 tested earlier builds than P1, without responsive weather or a working breathing input, so P2 gives no data on the weather feedback (G4) and the participants did not all test the same app.
+- P2 answered Parts C and D once for both runs, so those ratings cannot be split by build.
+- P3 did not do the control either. P3 compared two weather settings in a fixed order (stormy start first, two hours apart). P3 drank coffee about 2 hours before run 1, which may have raised that run's baseline heart rate (104 bpm) and exaggerated its drop. The weather parameter values were not recorded or committed, so the two settings cannot be reproduced exactly.
+- Each participant did a different comparison (control, sound, weather start), so each comparison rests on a single person.
 - The app has no session summary screen, so there is no app-reported breathing rate or time in calm state to compare with the heart rate.
 - Fitbit Inspire 3 heart rate is less precise than medical equipment and can change from movement, caffeine or nerves.
 - Self-reported scores can be affected by novelty, wanting to please the team, or the presence of an observer.
-- Participants are mostly acquaintances and students; results may not generalize to other groups.
+- Participants are mostly acquaintances (one student aged 19 and two working adults aged 48 and 59); results may not generalize to other groups.
 - Calm Woods is a relaxation aid, **not a medical treatment**.
 
 ---

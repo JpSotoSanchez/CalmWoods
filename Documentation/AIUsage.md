@@ -930,3 +930,142 @@ Summary, in order:
 - How it works: besides breathing rate and regularity, the score now compares every frame whether the chest rises during INHALE and falls during EXHALE; during the first seconds it reacts almost instantly and then smooths out; the weather maps the score to cloud count, height, distance and color, and also dims the sun and thickens the fog as stress rises.
 - I verified the result by: trying each build in the headset and comparing how fast and how clearly the sky reacted to my breathing.
 - One thing I still need to check: that the lightning is comfortable for participants, and which of these values were used in P3's runs.
+
+---
+
+# AI Use — Jaime Rincón Burboa
+
+**Author:** Jaime Rincón Burboa
+**Project:** Calm Woods
+**Course:** Human Computer Interaction (Universidad Panamericana)
+
+## How I use AI
+
+I used one Claude chat conversation (Claude Sonnet 5.5) under the same AI Level 2 (AI-assisted creation) as the rest of the team. I used it for two things: to plan the user research and the customer journey that the team uses as the base for the user testing, and to get ideas and a plan for the project's 2-minute commercial.
+
+In both uses I gave the AI the project proposal and my own decisions (who to research, which methods the team can run, how to frame the journey, what the commercial should focus on). The AI wrote drafts and suggestions; the team decides what to build and test, and the AI output is a starting point, not a result.
+
+## Index of entries
+
+| # | Date | Use | Type |
+|---|---|---|---|
+| 16 | 2026-11-24 | User research plan, persona and 5-stage customer journey | Testing support |
+| 17 | 2026-11-24 | Ideas and plan for the 2-minute commercial | Documentation / Video |
+
+---
+
+## Entry 16: User research plan, persona and 5-stage customer journey
+
+- **Tool:** Claude (Anthropic), Claude Sonnet 5.5
+- **Date:** 2026-11-24
+- **Teammate:** Jaime Rincón Burboa
+- **Purpose:** Analyze the project proposal and build the user research (needs, behaviors and constraints) and a 5-stage customer journey, to use as the base for the user testing.
+- **Related work:** Claude Doc "Calm Woods: User Research and Customer Journey" (made in the same chat). Entry 2 shows what happened to the User Research document afterwards. `TODO: add the repository file(s) where this content ended up`
+
+**Prompt**
+
+Sent in sequence:
+
+> I need you to analize the text and we are going to develop a user research and 5 stage journey, you can aske me if you need more details and help me make decisions
+>
+> USER RESEARCH AND CUSTOMER JOURNEY
+> Research identifies specific user needs, behaviors and constraints.
+> The customer journey shows relevant stages, actions, thoughts, emotions,
+> touchpoints and friction. Project decisions are traceable to this evidence.
+>
+> The user research is important because is what we are going to use for the user testing
+
+*(Attached: the project proposal, "Calm Woods: A Procedurally Generated VR Environment for Stress Management and Guided Breathing".)*
+
+The AI asked three questions with buttons. My answers:
+
+> Who is the primary user we should research and test with? → Any person who suffers from stress
+>
+> Which research methods can your team realistically run? → Observation during VR sessions, Some questions before and after using the VR
+>
+> How should the journey be framed? → One persona, one journey (simpler, recommended for 3 to 5 testers)
+
+Then I asked for the last answer as a Claude Doc: "Crea un Claude Doc a partir de tu última respuesta."
+
+**Response used**
+
+1. **Analysis of the proposal.** The AI listed the needs implied by the proposal, the constraints (standalone Quest, a sample of 3 to 5 people, 5-minute sessions, microphone or chest controller) and the evaluation already planned. It found gaps: the target user was not defined, there was no baseline of how people manage stress today, and some design assumptions were untested (that people will rest a controller on their chest, that the weather metaphor is intuitive, that 5 minutes is enough). It drafted five journey stages and asked the three questions above.
+
+2. **Full version, written as hypotheses to validate.**
+   - **Research plan:** a goal, 3 to 5 adult participants (18+) including at least one or two with no VR experience, exclusion criteria (severe motion sickness, epilepsy, respiratory conditions) and six research questions, each tied to a project objective.
+   - **Three instruments:** pre-session questions, an observation sheet, and post-session questions.
+   - **Persona:** "Ana, 27", a busy adult with everyday stress.
+   - **Customer journey, 5 stages:** awareness and expectations; onboarding and setup; guided breathing session; closing and summary; reflection and reuse. Each stage has actions, thoughts, emotions, touchpoints and friction.
+   - **Traceability table:** each hypothesized friction linked to a project decision and to a test question.
+   - **Recommendation:** use the STAI-6 instead of the GAD-7, because it measures how a person feels right now.
+
+3. **Claude Doc.** At my request the full answer was turned into a Claude Doc.
+
+Differences between this answer and what the project did (from the other entries):
+- Stage 4 of the journey assumed an end-of-session progress summary. The app does not have a session summary (Entries 1 and 2), and Entry 2 rebuilt the journey around the app's real flow with 6 stages.
+- The AI recommended the STAI-6 and listed the SUS. The team chose not to use either (Entry 2, `TestingProtocol.md` Section 6.5).
+- The plan said 3 to 5 participants; the tests ran with 3 (Entry 3).
+
+**Modifications**
+
+I decided the three points the AI asked about: the primary user (any person who suffers from stress), the methods the team can run (observation during the sessions plus questions before and after), and one persona with one journey. `TODO: write what you changed in the AI's version before the team used it`
+
+**Verification**
+
+- [ ] What I tested: `TODO: if you did not test the app for this entry, say so, as in Entries 1 to 4`
+- [ ] What actually happened: `TODO: what you did with the research plan, persona and journey`
+- [ ] Other checks: `TODO`
+
+The AI did not run the app or talk to users; the persona and the journey were hypotheses, and any evidence comes from the team's own tests.
+
+**What I can explain**
+
+- I used AI to: analyze the proposal, plan the user research, and draft a persona and a 5-stage journey to be tested.
+- I decided to: research any adult who has stress, use observation plus questions before and after the session (what the team can run), and use one persona and one journey.
+- I verified the result by: `TODO`
+- One thing I still need to check: that the persona and the journey match what the real participants said, since they were written as hypotheses.
+
+---
+
+## Entry 17: Ideas and plan for the 2-minute commercial
+
+- **Tool:** Claude (Anthropic), Claude Sonnet 5.5
+- **Date:** 2026-11-24
+- **Teammate:** Jaime Rincón Burboa
+- **Purpose:** Get ideas and a plan for the project's 2-minute commercial, focused on relaxation, edited in DaVinci Resolve by a programmer without design experience.
+- **Related work:** The commercial (its link was still pending in the README, Entry 1) and the DaVinci Resolve project. `TODO: add the final link`
+
+**Prompt**
+
+> Para este mismo proyecto tengo que realizar un comercial de 2 minutos, estoy trabajando en DaVinci pero yo soy programador, no diseñador, necesito tu ayuda para que me des ideas, y ayudarme a consolidar cómo hacer el comercial, principalmente queremos que se enfoque en la relajación como objetivo de la aplicación
+
+**Response used**
+
+- **Concept:** "contrast and relief": the video starts with the noise of stress (fast, saturated) and ends in calm (slow, warm), and the central scene is the storm clearing with the user's breathing. It also suggested slogans.
+- **Structure of 2:00:** six scenes with timings: stress (0:00–0:15), pause (0:15–0:30), entering the forest (0:30–0:55), breathing changes the world (0:55–1:30), time-of-day montage and audio (1:30–1:48), and closing with logo, slogan, "Meta Quest 2 and 3" and credits (1:48–2:00).
+- **How to get the shots from Unity:** use Unity Recorder with Cinemachine instead of recording the headset view, control the weather with a debug slider for the calm score instead of breathing live, record a cinematic and a headset version of each shot, and film a real person with 10 to 15 short clips.
+- **DaVinci Resolve basics:** work mostly in the Edit page at 1080p and 24 fps, Cross Dissolve in the calm part and hard cuts in the stress part, one color look, Text+ in a single style, royalty-free music (checking the license) and export with H.264 at 1080p.
+- **Advice on claims:** say the app "helps you relax" and not that it reduces stress or treats anxiety, because the project is a relaxation aid and the study has no results yet.
+
+It asked one question: whether the team already had recordings of the prototype in Unity, and who could appear on camera with the headset. It also offered to make a storyboard and shot list; I did not request it.
+
+The AI only knew the project from the proposal, not the app itself, so the scenes, timings and tips are suggestions that have to be adapted to what the app really shows.
+
+**Modifications**
+
+`TODO: write which ideas and scenes you kept or changed, and who appeared on camera`
+
+**Verification**
+
+- [ ] What I tested: `TODO: for example, whether the Unity recording and DaVinci steps worked in your setup`
+- [ ] What actually happened: `TODO`
+- [ ] Other checks: `TODO: for example, the license of the music you used`
+
+The AI did not run the app or edit the video.
+
+**What I can explain**
+
+- I used AI to: get a concept, a scene structure and practical tips for making and editing the commercial.
+- I decided to: `TODO: what you kept, changed or discarded`
+- I verified the result by: `TODO`
+- One thing I still need to check: that the commercial says the app "helps you relax" and does not claim to reduce stress or treat anxiety, and that the music and any other material can be used under their licenses.

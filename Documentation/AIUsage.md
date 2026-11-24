@@ -611,3 +611,322 @@ The AI did not run the app; results come from my own tests.
 - I decided to: use breathing detection with the microphone and the chest controller, show progress as weather, offer four times of day, and test with heart rate and surveys.
 - I verified the result by: reading the resulting proposal to check that it matched what we wanted for the project.
 - One thing I still need to check: which parts of the submitted proposal came from the AI's own additions (participant number, comparison condition, questionnaires) and which the team actually adopted.
+
+---
+
+# AI Use — Kenzo Matoo López
+
+**Author:** Kenzo Matoo López
+**Project:** Calm Woods
+**Course:** Human Computer Interaction (Universidad Panamericana)
+
+## How I use AI
+
+I used one Claude Code conversation (Claude Opus 5.5) as a development assistant for the parts of Calm Woods I was responsible for: the main menu, the time of day, the breathing wheel, the audio, the tutorial, the visual style of the UI and the responsiveness of the weather feedback.
+
+My process was the same in every feature: I designed what I wanted (often starting from our Figma design or a reference image), explained the behavior to the AI, built the scene hierarchy and wired the components in Unity, tested on the Meta Quest, and came back with what did not work or did not feel right until it did. The AI helped me in two ways: by guiding me step by step through Unity and VR setup, and by writing scripts from the behavior I specified. I reviewed and tested everything, decided what stayed, and made every commit and push myself.
+
+## Index of entries
+
+| # | Date | Use | Type |
+|---|---|---|---|
+| 9 | 2026-11-14 / 2026-11-15 | Main menu in VR and time of day (skyboxes, light, fog) | UI design / Unity code |
+| 10 | 2026-11-15 | Breathing wheel | UI design / Unity code |
+| 11 | 2026-11-21 | Options menu toggle, ambient sound and music | Unity code |
+| 12 | 2026-11-15 / 2026-11-22 | Git, project folder and build troubleshooting | Git / Debugging |
+| 13 | 2026-11-22 | Interactive controls tutorial | UI design / Unity code |
+| 14 | 2026-11-22 | Visual theme for all the UI | UI design |
+| 15 | 2026-11-22 | More responsive breathing feedback and weather | Unity code / Testing |
+
+---
+
+## Entry 9: Main menu in VR and time of day
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-14 / 2026-11-15
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Turn our Figma menu design into a working VR menu that is comfortable to read and use in the headset, and let the user choose the time of day (Dawn, Afternoon, Sunset, Night), which changes the sky, the light and the fog.
+- **Related work:** `Assets/Scenes/MenuScene.unity`, `Assets/CalmWoods/Scripts/UI/MainMenuController.cs`, `Assets/CalmWoods/Scripts/TimeOfDay/`, `Assets/CalmWoods/Skyboxes/`, `Assets/CalmWoods/TimeOfDay/`
+
+**Prompt**
+
+Summary of my requests, in order:
+
+1. Help me build the start menu from our Figma design so it looks good and works well as a VR interface (I shared the Figma frames).
+2. Review my progress from Game view screenshots and tell me what to change before continuing.
+3. With the skybox package I added, set Afternoon as the default and prepare the time-of-day buttons; later, make a Sunset sky similar to Dawn instead of disabling it.
+4. Why does the camera fall when I press Play?
+5. Turn on the fog shown on the package's page.
+6. A script so each menu button goes where it should.
+
+**Response used**
+
+- **Guidance I followed to build the scene myself:** how to set up VR in the menu scene (XR Origin, XR UI Event System, world-space canvas), the canvas size, distance and height for a seated user, minimum text sizes for the headset, the Vertical Layout Group settings, how to test without a headset (XR Device Simulator), and why the camera fell (the rig's gravity with no floor; I turned off Locomotion in the menu).
+- **Code written from my specification:** the time-of-day presets and manager (sky, sun, ambient light and fog per time), the time-of-day buttons, a session setting so the forest uses the same choice, warm-tinted Dawn and Sunset skies made from the package's day sky, and `MainMenuController` for the navigation between panels and the volume sliders.
+
+**Modifications**
+
+- I designed the menu in Figma and decided the flow (Start → options → Start Relaxing; About; Exit).
+- I built the whole menu in Unity: the canvas, the three panels, the buttons, the layout groups and the text, adjusting sizes and positions from the screenshots I tested.
+- I chose the skybox package, the four times of day, Afternoon as the default, and kept Sunset instead of disabling it.
+- I wired every component in the Inspector (presets, sun, panels, buttons, sliders) and set the skybox and fog in the Lighting window.
+
+**Verification**
+
+- [x] What I tested: I worked by trial and error in Play mode in the Unity editor, checking the Game view after every change to the canvas, the panels and the time-of-day buttons.
+- [x] What actually happened: The first layout was too wide and the elements were spread over the whole panel, so I fixed the canvas size and the layout group. Pressing Play made the camera fall, because the XR rig has gravity and the menu has no floor; turning off Locomotion fixed it. After that the buttons moved between panels and each time-of-day button changed the sky, the light and the fog.
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: learn how to set up a readable, comfortable VR menu, and to write the navigation and time-of-day scripts from my design.
+- I decided to: follow our Figma design, use four times of day with Afternoon as default, and turn off locomotion in the menu.
+- How it works: each time of day is a preset (sky, sun color and angle, ambient light, fog color and distance); a manager applies it when a button is pressed and stores the choice, so the forest scene loads with the same time. The fog color matches the horizon of each sky so they blend.
+- I verified the result by: testing each panel, button and time of day in Play mode after every change.
+- One thing I still need to check: how readable the menu is inside the headset at the distance and height I chose.
+
+---
+
+## Entry 10: Breathing wheel
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-15
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Create the breathing guide shown in the forest, based on a meditation-app reference I chose: a wheel that shows when to inhale, hold and exhale.
+- **Related work:** `Assets/CalmWoods/Scripts/Breathing/BreathingGuide.cs`, `BreathPattern.cs`, `Assets/CalmWoods/UI/Sprites/` (`Ring`, `Disc`, `Glow`)
+
+**Prompt**
+
+Summary: I shared a reference image of a breathing wheel and asked how to start building one in the center of the forest UI. Afterwards I asked for an explanation of every setting of the component so I could tune it.
+
+**Response used**
+
+- **Code written from my reference:** a component that splits a ring into one arc per phase, moves a dot around it once per breath, grows the center circle on inhale and shrinks it on exhale, and shows INHALE / HOLD / EXHALE with an optional countdown; plus the ring, dot and glow images.
+- **Guidance:** the hierarchy to build inside the canvas, how to place it for a seated user, and what each Inspector field does.
+
+**Modifications**
+
+- I chose the reference and the look of the wheel.
+- I built the canvas and the whole hierarchy (glow, track, segments, marker, labels) in Unity and assigned every reference.
+- I tuned the pattern and sizes; the team later set the 4-2-4-2 pattern and the 2 s start in the scene.
+
+**Verification**
+
+- [x] What I tested: I tested the wheel in Play mode in Unity, and later inside the headset when opening the breathing guide with B.
+- [x] What actually happened: The wheel went through inhale, hold and exhale with the dot and the growing circle. I adjusted its settings by trial and error after learning what each field does.
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: turn my reference into a working component and understand every setting.
+- I decided to: use a wheel with a growing circle as the main cue, so the user can follow it without reading.
+- How it works: the pattern's durations define the arcs; time inside the cycle gives the current phase and its progress; the circle's scale follows an eased curve (up on inhale, down on exhale) and the dot's rotation follows the whole cycle.
+- I verified the result by: watching full breathing cycles in the editor and in the headset.
+- One thing I still need to check: that the 4-2-4-2 pace is comfortable for people who are not used to guided breathing.
+
+---
+
+## Entry 11: Options menu toggle, ambient sound and music
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-21
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Open the options menu with its own button without overlapping the breathing UI, and give the forest sound: ambience that changes with the time of day, a river that is heard near the water, and background music; each controlled by its slider.
+- **Related work:** `Assets/CalmWoods/Scripts/Audio/AmbientSoundscape.cs`, `MusicPlaylist.cs`, `Assets/CalmWoods/Sounds/`, `Assets/CalmWoods/Music/`, commit `0b34998`
+
+**Prompt**
+
+Summary, in order:
+1. Toggle the settings UI with another button, the same way the breathing UI works, and make sure only one menu is open at a time.
+2. I added three sounds: Woods by default during the day, NightWoods at night, and the river fading in with the distance to the water, all on the ambient slider.
+3. I added five songs: play them in random order one after another and reshuffle when they end, controlled by the music slider.
+
+**Response used**
+
+- **Code written from my specification:** the options toggle (later replaced by the team's mode switcher on B and Y), `AmbientSoundscape` (day/night cross-fade, river by distance and direction, ambient slider) and `MusicPlaylist` (shuffled tracks, cross-fade, no song repeated twice in a row, music slider).
+- **Guidance:** how to build the options canvas next to the breathing one, and the import settings to stream audio on the Quest.
+
+**Modifications**
+
+- I chose and added the sounds and the songs, and defined how they should behave.
+- I built the options canvas and connected the sliders.
+- I tuned the values in the Inspector (water volume, distances, forest volume) after listening on the headset.
+
+**Verification**
+
+- [x] What I tested: I tested the sounds and the music in Unity and in builds on the Quest, moving the sliders, switching the time of day and walking towards the lake.
+- [x] What actually happened: The day and night ambience, the river and the playlist played and followed their sliders. In one build the sound stopped; it came back after I took the headset off and put it on again (the app had been paused). Both audio components had been wired to the music slider by mistake; this was corrected so each one uses its own slider. My first options toggle was later replaced by the team's mode switcher (B and Y).
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: write the audio scripts from the behavior I described.
+- I decided to: the sounds and songs, day vs. night ambience, a river that grows with proximity, and a random playlist.
+- How it works: each sound has its own audio source; volumes are recalculated every frame from the slider value, the day/night blend and the distance to the lake, and the playlist starts the next shuffled track a few seconds before the current one ends.
+- I verified the result by: listening in the headset while changing the sliders, the time of day and my position.
+- One thing I still need to check: that the app's own music and sounds do not interfere with the microphone breathing tracking.
+
+---
+
+## Entry 12: Git, project folder and build troubleshooting
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-15 / 2026-11-22
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Bring my teammates' changes into my work without breaking scenes, fix the problems that appeared after merges, and get the Android build working on the Quest.
+- **Related work:** branches `main`, `soto`, `KenzoBranch`; `Assets/Scenes/procWorld.unity`; XR template materials; project location `C:\Dev\CalmWoods`
+
+**Prompt**
+
+Summary of my requests: how to pull the `soto` branch; why the scene showed a white sphere in front of the camera; pulling `main` while keeping my teammate's scene and my own additions; the Android build error about the project path; why the clouds were pink and why the sound stopped in one build.
+
+**Response used**
+
+- **Guidance:** step-by-step commands for each pull and how to resolve each conflict (keep my teammate's version of the scene and add my components back, instead of merging scene text line by line).
+- **Diagnosis:** a material-conversion script had switched 90 template materials to another shader (the white sphere was the comfort vignette), so they were restored from the previous commit; the "ñ" in the folder name breaks the Android tools, so the project was moved to `C:\Dev\CalmWoods`; the clouds were pink because the weather had no material assigned; the headset logs were checked to find where the sound stopped.
+- When I asked it to, the AI applied the pull/restore steps and the scene fixes in my local project. I made every commit and push.
+
+**Modifications**
+
+- I decided which version to keep in each conflict.
+- I assigned the cloud material, rebuilt and tested each fix on the headset.
+- I made all the commits and pushes, with my own messages.
+
+**Verification**
+
+- [x] What I tested: After every pull or fix I opened the project in Unity and made a new build for the Quest.
+- [x] What actually happened: The white sphere in front of the camera disappeared once the materials were restored. The Android build failed because of the "ñ" in the folder name and worked after moving the project. The clouds stopped being pink after I assigned `Clouds.mat`. Each fix took a few tries until the build ran correctly on the headset.
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: resolve conflicts safely and find the cause of each build and scene problem.
+- I decided to: keep my teammate's scene and re-add my work, move the project to a path without accents, and how to test each fix.
+- What I learned: Unity scenes should not be merged line by line; the Android build needs an ASCII path; a material without a URP shader renders pink only in builds.
+- I verified the result by: opening the scenes in Unity and running a build on the headset after each fix.
+- One thing I still need to check: that Unity does not slip its own project-settings changes into my commits.
+
+---
+
+## Entry 13: Interactive controls tutorial
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-22
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Teach new users the controls inside the forest: walk, turn, open the breathing guide (B) and the options (Y).
+- **Related work:** `Assets/CalmWoods/Scripts/UI/TutorialGuide.cs`, `TutorialUI` in `procWorld`, commits `815b5c7`, `40db2f4`
+
+**Prompt**
+
+Summary, in order:
+1. A world-space tutorial that explains moving and turning with the joysticks and the two menu buttons.
+2. Remove continuing with A (it also makes the player jump).
+3. Bring the hints back, but continue with the trigger.
+4. Let the player skip the tutorial with the trigger.
+
+**Response used**
+
+- **Code written from my specification:** a 6-step tutorial where action steps finish only when the user does the action, text steps continue with a short trigger pull, holding the trigger 2 s skips it with a countdown, and the panel hides while a menu is open. Its default step texts, including resting the left controller on the chest, were kept.
+- **Guidance:** how to build the tutorial canvas and wire it.
+
+**Modifications**
+
+- I defined the steps and the controls to teach.
+- I found in testing that A made the player jump and changed the design to use the trigger to continue and to skip.
+- I built the tutorial canvas in Unity and tested the whole flow.
+
+**Verification**
+
+- [x] What I tested: I tested the tutorial in Unity, going through each step with the controllers.
+- [x] What actually happened: Pressing A to continue also made the player jump, so I asked to remove A and use the trigger to continue, and later to skip by holding it. After those changes the steps advanced correctly and the skip worked.
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: write the tutorial logic from the steps and controls I designed.
+- I decided to: which controls to teach, the trigger instead of A, and allowing a skip by holding the trigger.
+- How it works: each step has a goal (read, move the left stick, turn with the right stick, open and close a menu); the script checks the input or the app mode every frame and moves to the next step when the goal is met.
+- I verified the result by: testing the tutorial step by step after each change.
+- One thing I still need to check: that new users understand which controller goes on the chest (one participant still used the wrong one).
+
+---
+
+## Entry 14: Visual theme for all the UI
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-22
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** Give every menu the same calm look as our design: dark forest-green panels, amber main buttons, cream text in Inter, round slider handles.
+- **Related work:** `Assets/CalmWoods/UI/CalmWoodsUITheme.asset`, `Assets/CalmWoods/UI/Sprites/UI_*`, `Assets/CalmWoods/Scripts/UI/Theme/`, commit `40db2f4`
+
+**Prompt**
+
+Summary: design the buttons, sliders and typography for the whole UI; apply them to both scenes with a temporary tool and delete it afterwards. When the first result looked like the default Unity UI, I sent a screenshot and asked to fix it.
+
+**Response used**
+
+- **Code and assets from my direction:** a theme (colors, Inter, text sizes), rounded button, panel and slider sprites, and a component that applies the theme to every element of a canvas, plus a temporary editor tool to apply it to both scenes (deleted afterwards).
+- After my screenshot showed it had not applied, the cause was found (the theme was unloaded when each scene opened) and the tool was fixed.
+
+**Modifications**
+
+- I chose the look (green, amber, cream, Inter) to match our Figma design.
+- I ran the tool in Unity, checked the result in the editor, reported that it looked wrong, and re-ran it until it applied.
+- I marked which texts are titles and which button is the main action in each menu.
+
+**Verification**
+
+- [x] What I tested: I ran the theme tool in Unity and checked both scenes in the editor.
+- [x] What actually happened: The first two runs left the default Unity look (white panels and invisible titles) because the theme was not being applied. After reporting it with a screenshot and running the fixed tool, the panels, buttons, sliders and fonts updated in both scenes.
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: turn the visual direction into a reusable theme applied to every menu.
+- I decided to: the colors, the font, which button is primary in each menu, and to apply it to both scenes.
+- How it works: the theme asset stores colors, font, sizes and sprites; the applier goes through every button, slider and text in a canvas and styles it according to its role.
+- I verified the result by: comparing the menus in the editor before and after applying the theme.
+- One thing I still need to check: how the text sizes and colors read inside the headset.
+
+---
+
+## Entry 15: More responsive breathing feedback and weather
+
+- **Tool:** Claude (Anthropic), Claude Opus 5.5 (Claude Code)
+- **Date:** 2026-11-22
+- **Teammate:** Kenzo Matoo López
+- **Purpose:** In my own tests the weather took about a minute to react and did not reflect how I felt. I wanted it to respond faster and more clearly to breathing.
+- **Related work:** `CalmScoreCalculator.cs`, `WeatherController.cs`, `ControllerBreathingTracker.cs`, `MicrophoneBreathingTracker.cs`, `procWorld.unity`, commit `04dc20f` (before `bd448e3`, the build used with P3)
+
+**Prompt**
+
+Summary, in order:
+1. The feedback does not reflect how I feel: tell me how it could be improved and I decide what we do.
+2. Apply options 1, 2 and 3.
+3. It still does not feel responsive: exaggerate it, change the clouds' material and suggest other ideas.
+4. The first response is still too slow.
+
+**Response used**
+
+- **Analysis:** why it was slow (3 breaths before the first value, an average of 4 breaths, 6 s + 2 s of smoothing, a score based mostly on breathing rate) and 4 possible improvements. I chose which to apply.
+- **Code written for the options I chose:** faster values (2 breaths, 2 s smoothing, 1 s weather response, 2 s start), a quick-start period, a score for how well the chest follows the wheel, clouds that rise and brighten with each inhale, sun, ambient light and fog that follow the stress, soft lightning in a strong storm, and the calm score on a debug label.
+
+**Modifications**
+
+- I noticed the problem while testing on the headset and asked for options instead of a direct change.
+- I chose options 1–3, tested them, reported they still did not feel responsive, and asked for stronger visuals and a faster first response.
+- These scripts belong to the feedback chain from Entry 7, so I coordinated the changes with my teammate.
+
+**Verification**
+
+- [x] What I tested: I tested it in builds on the Quest, with the controller on my chest and the breathing guide open with B.
+- [x] What actually happened: After the first changes the weather still looked the same to me, so I asked to exaggerate it (lower and darker clouds, light and fog changes, soft lightning) and then to shorten the first response. I kept iterating build by build until I committed the changes (`04dc20f`).
+- [x] Other checks: None.
+
+**What I can explain**
+
+- I used AI to: understand why the feedback felt slow and implement the improvements I chose.
+- I decided to: which improvements to apply, to exaggerate the weather, and to shorten the first response.
+- How it works: besides breathing rate and regularity, the score now compares every frame whether the chest rises during INHALE and falls during EXHALE; during the first seconds it reacts almost instantly and then smooths out; the weather maps the score to cloud count, height, distance and color, and also dims the sun and thickens the fog as stress rises.
+- I verified the result by: trying each build in the headset and comparing how fast and how clearly the sky reacted to my breathing.
+- One thing I still need to check: that the lightning is comfortable for participants, and which of these values were used in P3's runs.

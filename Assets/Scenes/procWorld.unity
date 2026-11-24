@@ -3784,7 +3784,7 @@ MonoBehaviour:
   calmScore: {fileID: 1916464645}
   center: {fileID: 1254688333}
   debugLabel: {fileID: 0}
-  clearSkyScore: 0.75
+  clearSkyScore: 0.8
   stormScore: 0.35
   responseSeconds: 1
   cloudPrefab: {fileID: 0}

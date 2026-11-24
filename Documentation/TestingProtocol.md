@@ -8,7 +8,7 @@
 | **Hardware used in testing** | Meta Quest 2 · Fitbit Inspire 3 (all sessions) |
 | **Team** | Kenzo Matoo López · Jaime Rincón Burboa · José Pablo Soto Sánchez |
 
-> **Scope of this file.** It holds how the tests were run and the evidence behind them: goals, protocol, surveys, observation log, raw data, limitations and the Spanish versions given to participants. The participants, tasks, results and improvements are in [`UserTesting.md`](UserTesting.md).
+> **Scope of this file.** It holds how the tests were run and the evidence behind them: goals, protocol, surveys, observation log, raw data, limitations and the Spanish versions given to participants. The participants, tasks, results and improvements are in [`UserTesting.md`](UserTesting.md). What these results say about the users is in [`UserResearch.md`](UserResearch.md) (Section 6), and what they say about each design decision is in [`DesignJustification.md`](DesignJustification.md) (Section 11).
 
 ---
 
@@ -30,7 +30,7 @@ Testing is not a final approval step: it is evidence that must change the app. W
 
 ## 2. Participants and roles
 
-**Target audience:** adults (18+) who feel stress regularly in everyday life, including at least one or two people with no VR experience (same definition as `UserResearch.md`).
+**Target audience:** adults (18+) who feel stress regularly in everyday life, including at least one or two people with no VR experience (same definition as `UserResearch.md`). In the end, every participant had used VR at least once or twice.
 
 **Target number:** the plan allowed 3–5 participants; the **final sample is 3**.
 
@@ -50,8 +50,9 @@ Participants are anonymized (P1, P2, P3). No names are stored. If a participant 
 ## 3. Test setup
 
 - **Hardware:** Meta Quest 2 (headset + controllers) and Fitbit Inspire 3 smartwatch, in all sessions.
-- **Breathing input used:** P1: controller on the chest **and** microphone together · P2: none (the builds tested had no working breathing input; the left controller was placed on the chest but did not drive anything) · P3: controller on the chest **and** microphone together
+- **Breathing input used:** P1: controller on the chest **and** microphone together (both active; the calm score uses the controller first and the microphone only when the controller gives no estimate) · P2: none (the builds tested had no working breathing input; the left controller was placed on the chest but did not drive anything) · P3: controller on the chest **and** microphone together
 - **Position:** seated, comfortable posture, controller/hand resting on the chest for T2.
+- **Committed values in `bd448e3`** (P1, and P3 before the weather was adjusted): breathing pattern 4-2-4-2, "GET READY" 2 s, controller warm-up 2 s, calm score smoothed over 2 s, weather response 1 s, 2 to 14 clouds.
 - **Commit tested:** P1: `bd448e3` · P2: `36e5a79` (run 1, no sound) and `0b34998` (run 2, with music and ambient sound) · P3: `bd448e3`, with the weather parameters adjusted in Unity before each run (not committed; values not recorded)
 
 ---
@@ -94,10 +95,12 @@ The two tasks follow the real main flow: **Main menu → Setup → Forest → Br
 
 ### Deviations from the plan (actual sessions)
 
-- The final sample is 3 participants (planned 3–5).
+- The final sample is 3 participants (planned 3–5). Every participant had used VR at least once, so nobody without VR experience was tested.
+- The research interview (step 2, R1–R5) was done with all three participants before the pre-session survey. The answers are in `UserResearch.md`, Section 3.
+- P2 said in the interview that they get motion sick easily (R4). P2 was included because it was not considered severe motion sickness (exclusion criterion). P2 rated dizziness 2 of 5 and no session was stopped.
 - Consent was given **verbally**; no signed form was collected.
 - **Control condition:** P1 first sat quietly for 5 minutes without the app, and used the app 2 hours later. The order was not counterbalanced for P1. P2: **no control**. P2 did the full app session twice, with two builds one hour apart: run 1 without sound (`36e5a79`), then run 2 with music and ambient sound (`0b34998`), to see which version the user prefers. The order was not counterbalanced. · P3: **no control**. P3 did the full app session twice on `bd448e3`, two hours apart, with two weather settings: run 1 with the weather starting stormy and able to clear to very calm, then run 2 with the weather starting at a medium level and able to clear to much calmer. The order was not counterbalanced.
-- P3's weather parameters were changed in the Unity Inspector before each run. The changes were not committed and the exact values were not recorded.
+- P3's weather parameters were changed in the Unity Inspector before each run, as an iteration after P1 understood the weather late (`UserTesting.md`, F1). The changes were not committed and the exact values were not recorded.
 - P3 drank coffee about 2 hours before run 1 (no caffeine or exercise before run 2).
 - P3 answered Survey 1 and Survey 2 Parts A and B before and after each run, and Parts C and D once, after both runs.
 - P1 answered the earlier version of Survey 2 (items C1–C5 and open questions D1–D4), so **C6, D5 and D6 were not collected for P1** and G6 and G7 have no data for P1.
@@ -407,6 +410,7 @@ Results and times are for run 1. Times are seconds from the start of T1 or T2.
 - Fitbit Inspire 3 heart rate is less precise than medical equipment and can change from movement, caffeine or nerves.
 - Self-reported scores can be affected by novelty, wanting to please the team, or the presence of an observer.
 - Participants are mostly acquaintances (one student aged 19 and two working adults aged 48 and 59); results may not generalize to other groups.
+- Nobody without any VR experience took part, so the results may overestimate how easy the app is for complete beginners.
 - Calm Woods is a relaxation aid, **not a medical treatment**.
 
 ---

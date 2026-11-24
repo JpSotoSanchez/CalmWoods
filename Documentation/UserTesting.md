@@ -9,9 +9,9 @@
 | **Commit tested** | P1: [`bd448e3`](https://github.com/JpSotoSanchez/CalmWoods/commit/bd448e3ae4c7b97be729d471a22159f7f81b043c) · P2: [`36e5a79`](https://github.com/JpSotoSanchez/CalmWoods/commit/36e5a7954c37914d01b84840f7c3ad9756d74e79) (run 1, no sound) and [`0b34998`](https://github.com/JpSotoSanchez/CalmWoods/commit/0b34998ae3b90ce611e1d88032f518c39d921ea6) (run 2, with sound) · P3: [`bd448e3`](https://github.com/JpSotoSanchez/CalmWoods/commit/bd448e3ae4c7b97be729d471a22159f7f81b043c) with the weather parameters adjusted for each run |
 | **Test dates** | 22/11/2026 (P1) · 23/11/2026 (P2, P3) |
 
-> **Scope of this file.** It reports **who tested** Calm Woods, **the tasks they completed**, **the results** and **the improvements** we made. How the tests were run (protocol, surveys, observation log, raw data, limitations) is in [`TestingProtocol.md`](TestingProtocol.md). Who the users are and what they need is in [`UserResearch.md`](UserResearch.md).
+> **Scope of this file.** It reports **who tested** Calm Woods, **the tasks they completed**, **the results** and **the improvements** we made. How the tests were run (protocol, surveys, observation log, raw data, limitations) is in [`TestingProtocol.md`](TestingProtocol.md). Who the users are and what they need is in [`UserResearch.md`](UserResearch.md), and the design decisions being tested (D1–D9) are in [`DesignJustification.md`](DesignJustification.md).
 
-> **Status (23/11/2026).** Testing is complete with 3 participants. Each participant ran a different comparison. P1 compared the app with a control (sitting quietly). P2 compared a build without sound with a build with sound. P3 compared two weather settings: weather that starts stormy and clears to very calm, and weather that starts at a medium level and clears to much calmer. The changes in Section 5 have not been made yet.
+> **Status (23/11/2026).** Testing is complete with 3 participants. Each participant ran a different comparison. P1 compared the app with a control (sitting quietly). P2 compared a build without sound with a build with sound. P3 compared two weather settings: weather that starts stormy and clears to very calm, and weather that starts at a medium level and clears to much calmer. One change was made and re-tested during the study: after P1, the weather parameters were adjusted and compared with P3 (F1). The other changes in Section 5 have not been made yet.
 
 ---
 
@@ -29,7 +29,7 @@
 
 ## 2. Who tested the solution
 
-**Target audience:** adults (18+) who feel stress regularly in everyday life, including people with little or no VR experience (see [`UserResearch.md`](UserResearch.md)). Participants are anonymized. Consent was given verbally.
+**Target audience:** adults (18+) who feel stress regularly in everyday life, including people with little or no VR experience (see [`UserResearch.md`](UserResearch.md)). Participants are anonymized. Consent was given verbally. Every participant had used VR at least once or twice, so the plan to include someone with no VR experience was not met.
 
 | ID | Age | Occupation | VR experience | Date | Commit tested |
 |---|---|---|---|---|---|
@@ -234,14 +234,29 @@ Every row links a finding to its evidence and to the change that was made.
 
 | ID | Finding (what happened) | Evidence | Severity | Change implemented | Where in the project | Re-test result |
 |---|---|---|---|---|---|---|
-| F1 | The weather feedback is understood only late. P1 skipped the initial instructions, did not understand the clouds (C2 = 2) and noticed the weather reacting only in the last seconds of T2. P3 thought the weather was random at first, did not understand it at the start (C2 = 3) and noticed it 50 s into T2. Both asked for some indication of what the weather means | 4.1 (1.1, 2.4) · 4.5 (C2) · 4.6 (O1, O3, O4, O6, O7, O20–O23) · P1, P3 | 3 (proposed) | | | |
+| F1 | The weather feedback is understood only late. P1 skipped the initial instructions, did not understand the clouds (C2 = 2) and noticed the weather reacting only in the last seconds of T2. P3 thought the weather was random at first, did not understand it at the start (C2 = 3) and noticed it 50 s into T2. Both asked for some indication of what the weather means. The tutorial mentions the weather only in its last step ("watch the sky clear up") | 4.1 (1.1, 2.4) · 4.5 (C2) · 4.6 (O1, O3, O4, O6, O7, O20–O23) · P1, P3 | 3 (proposed) | After P1, the weather parameters were adjusted for P3's two runs: run 1 starts stormy and can clear to very calm; run 2 starts at a medium level and can clear to much calmer. Not committed; exact values not recorded | `WeatherController` in `procWorld` (Unity Inspector) | Re-tested with P3 (4.4): still understood late (C2 = 3, "at first I thought it was random"), and neither setting was clearly better. Explaining what the weather means is still needed |
 | F2 | P1 pressed the buttons of both menus twice by accident, because they pressed too fast | 4.1 errors · P1 | 2 (proposed) | | | |
 | F3 | Headset fit affected comfort. P1 felt mild dizziness and a slightly blurry image at the end of the session, while the clouds were moving, and the headset may not have been fitted well. P2 had slightly blurry vision because the lens spacing was set wrong (corrected during the session) and found the headset heavy and somewhat uncomfortable | 4.5 (C5 = 3 P1, 2 P2) · 4.6 (O5, O13, O14) · P1, P2 | 2 (proposed) | | | |
-| F4 | It is not clear which controller goes on the chest. P2 needed a hint to know it was the left controller, and P3 placed the right one first, even with the tutorial in the build. Only P1 placed it correctly without help. P2 also needed a hint to open the breathing menu, but P1 and P3, whose builds had the tutorial (`815b5c7` onwards), opened it unaided | 4.1 (2.1, 2.2) · 4.6 (O16, O27) · P2, P3 | 2 (proposed) | | | |
+| F4 | It is not clear which controller goes on the chest. P2 needed a hint to know it was the left controller, and P3 placed the right one first, even though the tutorial in that build says "Rest your left controller on your chest" (an instruction added with the tutorial in `815b5c7`, before testing). Only P1 placed it correctly without help. P2 also needed a hint to open the breathing menu, but P1 and P3, whose builds had the tutorial (`815b5c7` onwards), opened it unaided | 4.1 (2.1, 2.2) · 4.6 (O16, O27) · P2, P3 | 2 (proposed) | | | |
 | F5 | The breathing guide is only in English. P2 did not follow it in run 1 and needed each step explained | 4.1 (2.3) · 4.6 (O17) · P2 | 3 (proposed) | | | |
 | F6 | P2 did not know whether they were breathing correctly, which made them uneasy, and asked for something that measures breathing. P2's builds had no working breathing input; in the later build the weather gives this feedback, but P1 and P3 understood it late (F1) | 4.1 (2.5) · 4.6 (O10, O11, O12) · P2 (links to F1) | 3 (proposed) | | | |
 | F7 | Positive finding: the build with music and ambient sound improved every measure more than the build without sound, and music was P2's favorite part | 4.2 · 4.3 · 4.4 (P2) · 4.6 (O8, O9, O30) · P2 | 0 (keep) | None needed: music and ambient sound are in every build from `0b34998` on, including `bd448e3` | `Assets/CalmWoods/Scripts/Audio/` | |
 | F8 | The weather did not help P3 calm down (C3 = 3; "the weather didn't help me much"), and P3 did not relax much. Starting the weather stormy or at a medium level gave mixed results, with no clear preference. P3 also said that maybe an app is not what works best for them | 4.2 · 4.3 · 4.4 (P3) · 4.5 (C3) · 4.6 (O26, O29) · P3 | 2 (proposed) | | | |
+
+### Links to the research and the design
+
+Each finding traces back to a user need in [`UserResearch.md`](UserResearch.md) (K1–K11) and to the design decision it tests in [`DesignJustification.md`](DesignJustification.md) (D1–D9).
+
+| Finding | User research | Design decision |
+|---|---|---|
+| F1 Weather understood late | K2, K9 | D6 Clouds as feedback · D9 Tutorial |
+| F2 Double presses by accident | – | D3 Menus (error prevention) |
+| F3 Headset fit and comfort | K6 | D1 VR · D2 Low-poly (cybersickness) |
+| F4 Which controller goes on the chest | K5 | D7 Breathing input · D9 Tutorial |
+| F5 Guide only in English | K4 | D5 Breathing wheel · D9 Tutorial |
+| F6 Not knowing whether the breathing is right | K1 | D6 Clouds as feedback (and the session summary planned in the proposal, Section 4.3) |
+| F7 Sound improves the session | K3 | D8 Time of day and audio |
+| F8 Weather did not help P3 | K7, K10 | D6 Clouds as feedback |
 
 ### Iteration log (before → after)
 
@@ -250,7 +265,7 @@ Every row links a finding to its evidence and to the change that was made.
 | `36e5a79` (tested with P2, run 1) | 21/11/2026 | Build without music or ambient sound; weather not yet responsive | – |
 | `0b34998` (tested with P2, run 2) | 21/11/2026 | Adds the music playlist and the ambient soundscape | – |
 | `bd448e3` (tested with P1, and with P3 in two weather settings) | 22/11/2026 | Responsive weather and tutorial. For P3 the weather parameters were adjusted in Unity for each run; those values were not committed | – |
-| `_______` | | | F__ |
+| Not committed (Unity Inspector) | 23/11/2026 | Weather parameters adjusted for P3's two runs: start stormy vs. start at a medium level | F1 |
 | `_______` | | | F__ |
 
-**Re-test:** ☐ Done with ___ participants ☐ Not possible (reason: ____________) · **Result:** ________________________________
+**Re-test:** ☒ Done with 1 participant (P3, weather change for F1) · **Result:** the weather was still understood late and neither setting was clearly better (Section 4.4). The other findings have not been re-tested.
